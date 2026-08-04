@@ -1,0 +1,40 @@
+﻿[Γ£ô] Flutter (Channel stable, 3.44.8, on Microsoft Windows [Version 10.0.26200.8973], locale en-US) [280ms]
+    ΓÇó Flutter version 3.44.8 on channel stable at C:\flutter
+    ΓÇó Upstream repository https://github.com/flutter/flutter.git
+    ΓÇó Framework revision 058e0af2c2 (8 days ago), 2026-07-23 10:56:21 -0700
+    ΓÇó Engine revision 0cd610717b
+    ΓÇó Dart version 3.12.2
+    ΓÇó DevTools version 2.57.0
+    ΓÇó Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, enable-swift-package-manager, omit-legacy-version-file, enable-lldb-debugging, enable-uiscene-migration
+
+[Γ£ô] Windows Version (11 Home 64-bit, 25H2, 2009) [797ms]
+
+[!] Android toolchain - develop for Android devices (Android SDK version 36.0.0) [288ms]
+    ΓÇó Android SDK at C:\Users\Asus\AppData\Local\Android\sdk
+    ΓÇó Emulator version 34.2.15.0 (build_id 11906825) (CL:N/A)
+    Γ£ù cmdline-tools component is missing.
+      Try installing or updating Android Studio.
+      Alternatively, download the tools from https://developer.android.com/studio#command-line-tools-only and make sure to set the ANDROID_HOME environment variable.
+      See https://developer.android.com/studio/command-line for more details.
+    Γ£ù Android license status unknown.
+      Run `flutter doctor --android-licenses` to accept the SDK licenses.
+      See https://flutter.dev/to/windows-android-setup for more details.
+
+[Γ£ô] Chrome - develop for the web [74ms]
+    ΓÇó Chrome at C:\Program Files (x86)\Google\Chrome\Application\chrome.exe
+
+[Γ£ô] Visual Studio - develop Windows apps (Visual Studio Community 2022 17.10.3) [73ms]
+    ΓÇó Visual Studio at C:\Program Files\Microsoft Visual Studio\2022\Community
+    ΓÇó Visual Studio Community 2022 version 17.10.35013.160
+    ΓÇó Windows 10 SDK version 10.0.22621.0
+
+[Γ£ô] Connected device (4 available) [390ms]
+    ΓÇó Infinix X6815B (mobile) ΓÇó H772X6815B012345 ΓÇó android-arm64  ΓÇó Android 12 (API 31)
+    ΓÇó Windows (desktop)       ΓÇó windows          ΓÇó windows-x64    ΓÇó Microsoft Windows [Version 10.0.26200.8973]
+    ΓÇó Chrome (web)            ΓÇó chrome           ΓÇó web-javascript ΓÇó Google Chrome 150.0.7871.187
+    ΓÇó Edge (web)              ΓÇó edge             ΓÇó web-javascript ΓÇó Microsoft Edge 150.0.4078.105
+
+[Γ£ô] Network resources [1,213ms]
+    ΓÇó All expected network resources are available.
+
+! Doctor found issues in 1 category.
