@@ -47,7 +47,7 @@ class _SkeletonLoaderState extends State<SkeletonLoader>
     final isDark = context.isDark;
     final baseColor = isDark ? AppColors.darkSurface : AppColors.lightBorder;
     final highlightColor = isDark 
-        ? AppColors.darkSurfaceElevated 
+        ? AppColors.darkSecondary 
         : const Color(0xFFF3F4F6);
 
     return AnimatedBuilder(

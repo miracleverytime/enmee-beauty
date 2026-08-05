@@ -279,13 +279,13 @@ class ProductCard extends StatelessWidget {
     Color textColor;
 
     if (isOutOfStock) {
-      bgColor = context.dangerLightColor;
-      textColor = context.dangerColor;
+      bgColor = context.destructiveColor.withOpacity(0.1);
+      textColor = context.destructiveColor;
     } else if (isLowStock) {
-      bgColor = context.warningLightColor;
+      bgColor = context.warningColor.withOpacity(0.1);
       textColor = context.warningColor;
     } else {
-      bgColor = context.successLightColor;
+      bgColor = context.successColor.withOpacity(0.1);
       textColor = context.successColor;
     }
 
@@ -310,7 +310,7 @@ class ProductCard extends StatelessWidget {
   }
 
   Color _getStockColor(BuildContext context, bool isOutOfStock, bool isLowStock) {
-    if (isOutOfStock) return context.dangerColor;
+    if (isOutOfStock) return context.destructiveColor;
     if (isLowStock) return context.warningColor;
     return context.successColor;
   }

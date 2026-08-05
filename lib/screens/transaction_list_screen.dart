@@ -7,6 +7,7 @@ import '../theme/app_theme.dart';
 import 'add_transaction_screen.dart';
 import 'product_list_screen.dart';
 import 'report_screen.dart';
+import 'settings_screen.dart';
 
 class TransactionListScreen extends StatefulWidget {
   const TransactionListScreen({super.key});
@@ -430,17 +431,17 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       height: 70,
       decoration: BoxDecoration(
-        color: context.surfaceColor.withOpacity(0.8),
+        color: AppColors.darkSurface.withOpacity(0.8),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: context.borderColor.withOpacity(0.2),
+          color: AppColors.darkForeground.withOpacity(0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.25),
             blurRadius: 20,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -449,7 +450,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            color: context.surfaceColor.withOpacity(0.7),
+            color: AppColors.darkSurface.withOpacity(0.8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -457,7 +458,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                 Expanded(child: _buildNavItem(Icons.receipt_long, 'Transaksi', true, () {})),
                 const SizedBox(width: 60), // Space for FAB
                 Expanded(child: _buildNavItem(Icons.bar_chart_outlined, 'Laporan', false, () => navigateFade(context, const ReportScreen()))),
-                Expanded(child: _buildNavItem(Icons.settings_outlined, 'Setting', false, () => Navigator.pushNamed(context, '/settings'))),
+                Expanded(child: _buildNavItem(Icons.settings_outlined, 'Setting', false, () => navigateFade(context, const SettingsScreen()))),
               ],
             ),
           ),
@@ -477,7 +478,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
           children: [
             Icon(
               icon,
-              color: isActive ? AppColors.primary : context.textMuted,
+              color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -485,7 +486,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
               label,
               style: TextStyle(
                 fontSize: 11,
-                color: isActive ? AppColors.primary : context.textMuted,
+                color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
               textAlign: TextAlign.center,

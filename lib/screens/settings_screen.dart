@@ -95,18 +95,6 @@ class _SettingsScreenState extends State<SettingsScreen> {
           ],
         ),
       ),
-      floatingActionButton: SizedBox(
-        width: 65,
-        height: 65,
-        child: FloatingActionButton(
-          onPressed: () {},
-          backgroundColor: AppColors.primary,
-          elevation: 8,
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add, color: Colors.white, size: 32),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _buildBottomBar(),
     );
   }
@@ -201,14 +189,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 height: 40,
                 decoration: BoxDecoration(
                   color: isDestructive
-                      ? context.dangerColor.withOpacity(0.1)
+                      ? context.destructiveColor.withOpacity(0.1)
                       : context.backgroundColor,
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   icon,
                   size: 20,
-                  color: isDestructive ? context.dangerColor : context.textSecondary,
+                  color: isDestructive ? context.destructiveColor : context.textSecondary,
                 ),
               ),
               const SizedBox(width: 12),
@@ -221,7 +209,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: isDestructive ? context.dangerColor : context.textPrimary,
+                        color: isDestructive ? context.destructiveColor : context.textPrimary,
                       ),
                     ),
                     const SizedBox(height: 2),
@@ -253,17 +241,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       height: 70,
       decoration: BoxDecoration(
-        color: context.surfaceColor.withOpacity(0.8),
+        color: AppColors.darkSurface.withOpacity(0.8),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: context.borderColor.withOpacity(0.2),
+          color: AppColors.darkForeground.withOpacity(0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.25),
             blurRadius: 20,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -272,13 +260,12 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            color: context.surfaceColor.withOpacity(0.7),
+            color: AppColors.darkSurface.withOpacity(0.8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 Expanded(child: _buildNavItem(Icons.inventory_2_outlined, 'Produk', false, () => navigateFade(context, const ProductListScreen()))),
                 Expanded(child: _buildNavItem(Icons.receipt_long_outlined, 'Transaksi', false, () => navigateFade(context, const TransactionListScreen()))),
-                const SizedBox(width: 60),
                 Expanded(child: _buildNavItem(Icons.bar_chart_outlined, 'Laporan', false, () => navigateFade(context, const ReportScreen()))),
                 Expanded(child: _buildNavItem(Icons.settings, 'Setting', true, () {})),
               ],
@@ -300,7 +287,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           children: [
             Icon(
               icon,
-              color: isActive ? AppColors.primary : context.textMuted,
+              color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -308,7 +295,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               label,
               style: TextStyle(
                 fontSize: 11,
-                color: isActive ? AppColors.primary : context.textMuted,
+                color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
               textAlign: TextAlign.center,

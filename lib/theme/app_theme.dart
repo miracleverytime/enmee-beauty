@@ -2,35 +2,30 @@ import 'package:flutter/material.dart';
 
 /// Design Tokens - Color Palette
 class AppColors {
-  // Primary Accent (Indigo)
-  static const Color primary = Color(0xFF4F46E5);
-  static const Color primaryDark = Color(0xFF4338CA);
-  static const Color primaryLight = Color(0xFF6366F1);
+  // Primary & Accent Colors
+  static const Color primary = Color(0xFF6366F0); // #6366F0 - FAB, tab aktif, aksen indigo
+  static const Color accent = Color(0xFF7F8AF5); // #7F8AF5 - indigo terang
   
   // Semantic Colors
-  static const Color success = Color(0xFF10B981);
-  static const Color successLight = Color(0xFFD1FAE5);
-  static const Color warning = Color(0xFFF59E0B);
-  static const Color warningLight = Color(0xFFFEF3C7);
-  static const Color danger = Color(0xFFEF4444);
-  static const Color dangerLight = Color(0xFFFEE2E2);
+  static const Color success = Color(0xFF34D896); // #34D896 - stok aman / margin positif
+  static const Color warning = Color(0xFFF6BD36); // #F6BD36 - badge stok rendah
+  static const Color destructive = Color(0xFFF14460); // #F14460 - stok habis / error
   
-  // Light Mode - Neutral Grays
+  // Dark Mode Colors
+  static const Color darkBackground = Color(0xFF0A0D15); // #0A0D15 - latar layar
+  static const Color darkSurface = Color(0xFF161B24); // #161B24 - kartu metrik, produk, nav
+  static const Color darkSecondary = Color(0xFF1F242E); // #1F242E - field search, tombol filter
+  static const Color darkBorder = Color(0xFF232935); // #232935 - garis tepi
+  static const Color darkForeground = Color(0xFFFAFAFA); // #FAFAFA - teks utama
+  static const Color darkMutedForeground = Color(0xFF95A3B6); // #95A3B6 - teks sekunder / label
+  
+  // Light Mode - Neutral Grays (fallback jika dibutuhkan)
   static const Color lightBackground = Color(0xFFFAFAFA);
   static const Color lightSurface = Color(0xFFFFFFFF);
   static const Color lightBorder = Color(0xFFE5E7EB);
   static const Color lightTextPrimary = Color(0xFF111827);
   static const Color lightTextSecondary = Color(0xFF6B7280);
   static const Color lightTextMuted = Color(0xFF9CA3AF);
-  
-  // Dark Mode - Neutral Grays
-  static const Color darkBackground = Color(0xFF0F172A);
-  static const Color darkSurface = Color(0xFF1E293B);
-  static const Color darkSurfaceElevated = Color(0xFF334155);
-  static const Color darkBorder = Color(0xFF334155);
-  static const Color darkTextPrimary = Color(0xFFF1F5F9);
-  static const Color darkTextSecondary = Color(0xFFCBD5E1);
-  static const Color darkTextMuted = Color(0xFF94A3B8);
 }
 
 /// Design Tokens - Spacing & Sizing
@@ -131,9 +126,9 @@ ThemeData lightTheme() {
     brightness: Brightness.light,
     colorScheme: ColorScheme.light(
       primary: AppColors.primary,
-      secondary: AppColors.primaryLight,
+      secondary: AppColors.accent,
       surface: AppColors.lightSurface,
-      error: AppColors.danger,
+      error: AppColors.destructive,
     ),
     scaffoldBackgroundColor: AppColors.lightBackground,
     appBarTheme: const AppBarTheme(
@@ -199,17 +194,17 @@ ThemeData darkTheme() {
     useMaterial3: true,
     brightness: Brightness.dark,
     colorScheme: ColorScheme.dark(
-      primary: AppColors.primaryLight,
-      secondary: AppColors.primary,
+      primary: AppColors.primary,
+      secondary: AppColors.accent,
       surface: AppColors.darkSurface,
-      error: AppColors.danger,
+      error: AppColors.destructive,
     ),
     scaffoldBackgroundColor: AppColors.darkBackground,
     appBarTheme: const AppBarTheme(
       centerTitle: false,
       elevation: 0,
       backgroundColor: AppColors.darkSurface,
-      foregroundColor: AppColors.darkTextPrimary,
+      foregroundColor: AppColors.darkForeground,
       surfaceTintColor: Colors.transparent,
     ),
     cardTheme: CardThemeData(
@@ -227,7 +222,7 @@ ThemeData darkTheme() {
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      fillColor: AppColors.darkBackground,
+      fillColor: AppColors.darkSecondary,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.sm),
         borderSide: const BorderSide(color: AppColors.darkBorder),
@@ -238,7 +233,7 @@ ThemeData darkTheme() {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.sm),
-        borderSide: const BorderSide(color: AppColors.primaryLight, width: 2),
+        borderSide: const BorderSide(color: AppColors.primary, width: 2),
       ),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.md,
@@ -256,8 +251,8 @@ ThemeData darkTheme() {
       labelMedium: AppTextStyles.labelMedium,
       labelSmall: AppTextStyles.labelSmall,
     ).apply(
-      bodyColor: AppColors.darkTextPrimary,
-      displayColor: AppColors.darkTextPrimary,
+      bodyColor: AppColors.darkForeground,
+      displayColor: AppColors.darkForeground,
     ),
   );
 }
@@ -268,16 +263,16 @@ extension ThemeExtension on BuildContext {
   
   Color get surfaceColor => isDark ? AppColors.darkSurface : AppColors.lightSurface;
   Color get backgroundColor => isDark ? AppColors.darkBackground : AppColors.lightBackground;
+  Color get secondaryColor => isDark ? AppColors.darkSecondary : AppColors.lightBackground;
   Color get borderColor => isDark ? AppColors.darkBorder : AppColors.lightBorder;
-  Color get textPrimary => isDark ? AppColors.darkTextPrimary : AppColors.lightTextPrimary;
-  Color get textSecondary => isDark ? AppColors.darkTextSecondary : AppColors.lightTextSecondary;
-  Color get textMuted => isDark ? AppColors.darkTextMuted : AppColors.lightTextMuted;
+  Color get textPrimary => isDark ? AppColors.darkForeground : AppColors.lightTextPrimary;
+  Color get textSecondary => isDark ? AppColors.darkMutedForeground : AppColors.lightTextSecondary;
+  Color get textMuted => isDark ? AppColors.darkMutedForeground : AppColors.lightTextMuted;
   
-  // Semantic colors (sama untuk light & dark)
+  // Semantic colors
+  Color get primaryColor => AppColors.primary;
+  Color get accentColor => AppColors.accent;
   Color get successColor => AppColors.success;
-  Color get successLightColor => AppColors.successLight;
   Color get warningColor => AppColors.warning;
-  Color get warningLightColor => AppColors.warningLight;
-  Color get dangerColor => AppColors.danger;
-  Color get dangerLightColor => AppColors.dangerLight;
+  Color get destructiveColor => AppColors.destructive;
 }

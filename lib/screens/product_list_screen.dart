@@ -11,6 +11,7 @@ import '../main.dart';
 import 'add_product_screen.dart';
 import 'transaction_list_screen.dart';
 import 'report_screen.dart';
+import 'settings_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -54,7 +55,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Gagal memuat data: $e'),
-            backgroundColor: context.dangerColor,
+            backgroundColor: context.destructiveColor,
           ),
         );
       }
@@ -131,7 +132,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               }
               _loadData();
             },
-            style: TextButton.styleFrom(foregroundColor: context.dangerColor),
+            style: TextButton.styleFrom(foregroundColor: context.destructiveColor),
             child: const Text('Hapus'),
           ),
         ],
@@ -387,7 +388,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   trendColor: const Color(0xFF10B981),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: _buildStatCard(
                   label: 'Nilai Stok',
@@ -397,7 +398,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
               ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 10),
           Row(
             children: [
               Expanded(
@@ -408,7 +409,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   badgeColor: const Color(0xFFEF4444),
                 ),
               ),
-              const SizedBox(width: 12),
+              const SizedBox(width: 10),
               Expanded(
                 child: _buildStatCard(
                   label: 'Avg Margin',
@@ -433,7 +434,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     Color? badgeColor,
   }) {
     return Container(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
       decoration: BoxDecoration(
         color: context.surfaceColor,
         borderRadius: BorderRadius.circular(12),
@@ -444,6 +445,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           Text(
             label,
@@ -451,9 +453,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
               color: context.textMuted,
               fontSize: 11,
               fontWeight: FontWeight.w400,
+              height: 1.2,
             ),
           ),
-          const SizedBox(height: 6),
+          const SizedBox(height: 4),
           Row(
             crossAxisAlignment: CrossAxisAlignment.baseline,
             textBaseline: TextBaseline.alphabetic,
@@ -464,6 +467,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   color: context.textPrimary,
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
+                  height: 1.1,
                 ),
               ),
               if (suffix != null)
@@ -473,6 +477,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     color: context.textMuted,
                     fontSize: 12,
                     fontWeight: FontWeight.w500,
+                    height: 1.1,
                   ),
                 ),
               if (trend != null) ...[
@@ -483,6 +488,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     color: trendColor ?? context.textMuted,
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
+                    height: 1.1,
                   ),
                 ),
               ],
@@ -829,17 +835,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       height: 70,
       decoration: BoxDecoration(
-        color: context.surfaceColor.withOpacity(0.8),
+        color: AppColors.darkSurface.withOpacity(0.8),
         borderRadius: BorderRadius.circular(24),
         border: Border.all(
-          color: context.borderColor.withOpacity(0.2),
+          color: AppColors.darkForeground.withOpacity(0.1),
           width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.1),
+            color: Colors.black.withOpacity(0.25),
             blurRadius: 20,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, -2),
           ),
         ],
       ),
@@ -848,7 +854,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
         child: BackdropFilter(
           filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
           child: Container(
-            color: context.surfaceColor.withOpacity(0.7),
+            color: AppColors.darkSurface.withOpacity(0.8),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
@@ -882,7 +888,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     Icons.settings_outlined,
                     'Setting',
                     false,
-                    () => Navigator.pushNamed(context, '/settings'),
+                    () => navigateFade(context, const SettingsScreen()),
                   ),
                 ),
               ],
@@ -907,14 +913,14 @@ class _ProductListScreenState extends State<ProductListScreen> {
           children: [
             Icon(
               icon,
-              color: isActive ? AppColors.primary : context.textMuted,
+              color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
               size: 24,
             ),
             const SizedBox(height: AppSpacing.xs),
             Text(
               label,
               style: AppTextStyles.labelMedium.copyWith(
-                color: isActive ? AppColors.primary : context.textMuted,
+                color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
               textAlign: TextAlign.center,
