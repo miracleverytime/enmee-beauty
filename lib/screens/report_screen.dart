@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../database/database_helper.dart';
 import '../utils/page_transitions.dart';
+import '../theme/app_theme.dart';
 import 'product_list_screen.dart';
 import 'transaction_list_screen.dart';
 
@@ -84,14 +85,17 @@ class _ReportScreenState extends State<ReportScreen> {
     final marginPercent = totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).round() : 0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: context.backgroundColor,
       body: SafeArea(
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
             : Column(
                 children: [
-                  _buildHeader(totalRevenue, totalProfit, marginPercent, totalTransactions, totalItems),
-                  const SizedBox(height: 8),
+                  _buildHeader(),
+                  _buildPeriodSelector(),
+                  const SizedBox(height: 12),
+                  _buildSummaryStats(totalRevenue, totalProfit, marginPercent, totalTransactions, totalItems),
+                  const SizedBox(height: 12),
                   _buildProductListSection(),
                 ],
               ),
@@ -100,11 +104,74 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
+  Widget _buildHeader() {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: context.borderColor.withOpacity(0.5),
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(
+            'Laporan',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: context.textPrimary,
+            ),
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 36,
+                decoration: BoxDecoration(
+                  color: context.backgroundColor,
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: context.borderColor.withOpacity(0.3),
+                    width: 1,
+                  ),
+                ),
+                child: IconButton(
+                  padding: EdgeInsets.zero,
+                  onPressed: () {
+                    // Export action
+                  },
+                  icon: Icon(
+                    Icons.download_outlined,
+                    color: context.textSecondary,
+                    size: 18,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildPeriodSelector() {
     final periods = ['Hari Ini', 'Minggu Ini', 'Bulan Ini', 'Semua'];
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -121,15 +188,19 @@ class _ReportScreenState extends State<ReportScreen> {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   decoration: BoxDecoration(
-                    color: isSelected ? Colors.black : const Color(0xFFF5F5F5),
+                    color: isSelected ? AppColors.primary : context.surfaceColor,
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(
+                      color: isSelected ? AppColors.primary : context.borderColor,
+                      width: 1,
+                    ),
                   ),
                   child: Text(
                     period,
                     style: TextStyle(
                       fontSize: 13,
                       fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      color: isSelected ? Colors.white : const Color(0xFF757575),
+                      color: isSelected ? Colors.white : context.textMuted,
                     ),
                   ),
                 ),
@@ -141,163 +212,45 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
-  Widget _buildHeader(double revenue, double profit, int marginPercent, int transactions, int items) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-      color: Colors.white,
+  Widget _buildSummaryStats(double revenue, double profit, int marginPercent, int transactions, int items) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'ANALITIK',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF757575),
-              letterSpacing: 0.5,
-            ),
-          ),
-          const SizedBox(height: 4),
-          const Text(
-            'Laporan Pendapatan',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold,
-              color: Colors.black,
-            ),
-          ),
-          const SizedBox(height: 16),
-          _buildPeriodSelector(),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: const Color(0xFFF5F5F5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'REVENUE',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w500,
-                    color: Color(0xFF757575),
-                    letterSpacing: 0.5,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text(
-                    'Rp ${_formatCurrency(revenue)}',
-                    style: const TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: Text(
-                        'Profit ($marginPercent% margin)',
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF757575),
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Rp ${_formatCurrency(profit)}',
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.black,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Transaksi',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF757575),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          '$transactions',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: _buildStatCard(
+                  label: 'Total Revenue',
+                  value: _formatCurrencyCompact(revenue),
+                  suffix: revenue >= 1000000 ? ' JT' : ' RB',
                 ),
               ),
               const SizedBox(width: 12),
               Expanded(
-                child: Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Item Terjual',
-                        style: TextStyle(
-                          fontSize: 12,
-                          color: Color(0xFF757575),
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      FittedBox(
-                        fit: BoxFit.scaleDown,
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          '$items',
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+                child: _buildStatCard(
+                  label: 'Total Profit',
+                  value: _formatCurrencyCompact(profit),
+                  suffix: profit >= 1000000 ? ' JT' : ' RB',
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Expanded(
+                child: _buildStatCard(
+                  label: 'Transaksi',
+                  value: '$transactions',
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildStatCard(
+                  label: 'Margin',
+                  value: '$marginPercent',
+                  suffix: ' %',
                 ),
               ),
             ],
@@ -307,24 +260,80 @@ class _ReportScreenState extends State<ReportScreen> {
     );
   }
 
+  Widget _buildStatCard({
+    required String label,
+    required String value,
+    String? suffix,
+  }) {
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: context.borderColor.withOpacity(0.5),
+          width: 1,
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              color: context.textMuted,
+              fontSize: 11,
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.baseline,
+            textBaseline: TextBaseline.alphabetic,
+            children: [
+              Text(
+                value,
+                style: TextStyle(
+                  color: context.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              if (suffix != null)
+                Text(
+                  suffix,
+                  style: TextStyle(
+                    color: context.textMuted,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  String _formatCurrencyCompact(double amount) {
+    if (amount >= 1000000000) {
+      return (amount / 1000000000).toStringAsFixed(1);
+    } else if (amount >= 1000000) {
+      return (amount / 1000000).toStringAsFixed(1);
+    } else if (amount >= 1000) {
+      return (amount / 1000).toStringAsFixed(0);
+    }
+    return amount.toStringAsFixed(0);
+  }
+
   Widget _buildProductListSection() {
     return Expanded(
       child: Container(
-        padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-        color: const Color(0xFFF5F5F5),
+        padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+        color: context.backgroundColor,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'PRODUK TERATAS',
-              style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                color: Color(0xFF757575),
-                letterSpacing: 0.5,
-              ),
-            ),
-            const SizedBox(height: 12),
             Expanded(
               child: _revenueByProduct.isEmpty
                   ? const Center(
@@ -338,7 +347,7 @@ class _ReportScreenState extends State<ReportScreen> {
                       child: ListView.separated(
                         padding: const EdgeInsets.only(bottom: 80),
                         itemCount: _revenueByProduct.length,
-                        separatorBuilder: (context, index) => const SizedBox(height: 8),
+                        separatorBuilder: (context, index) => const SizedBox(height: 10),
                         itemBuilder: (context, index) => _buildProductCard(_revenueByProduct[index]),
                       ),
                     ),
@@ -409,7 +418,10 @@ class _ReportScreenState extends State<ReportScreen> {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
+        border: Border(
+          top: BorderSide(color: context.borderColor, width: 1),
+        ),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.05),
@@ -442,7 +454,7 @@ class _ReportScreenState extends State<ReportScreen> {
           children: [
             Icon(
               icon,
-              color: isActive ? Colors.black : const Color(0xFF9E9E9E),
+              color: isActive ? AppColors.primary : context.textMuted,
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -450,7 +462,7 @@ class _ReportScreenState extends State<ReportScreen> {
               label,
               style: TextStyle(
                 fontSize: 11,
-                color: isActive ? Colors.black : const Color(0xFF9E9E9E),
+                color: isActive ? AppColors.primary : context.textMuted,
                 fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
               ),
               textAlign: TextAlign.center,

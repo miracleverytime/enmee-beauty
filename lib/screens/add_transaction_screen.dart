@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import '../models/product.dart';
 import '../models/transaction.dart' as model;
+import '../theme/app_theme.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -103,23 +104,43 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         : 0.0;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          '< Kembali',
-          style: TextStyle(
-            fontSize: 14,
-            color: Color(0xFF757575),
-            fontWeight: FontWeight.normal,
+        title: Container(
+          margin: const EdgeInsets.only(right: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: context.borderColor.withOpacity(0.5),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Text(
+            'Tambah Transaksi',
+            style: TextStyle(
+              color: context.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
-        titleSpacing: 0,
+        centerTitle: true,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -127,22 +148,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
               ? const Center(child: CircularProgressIndicator())
               : SafeArea(
                   child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                          color: Colors.white,
-                          child: const Text(
-                            'Tambah Transaksi',
-                            style: TextStyle(
-                              fontSize: 28,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
                         Container(
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           padding: const EdgeInsets.all(20),

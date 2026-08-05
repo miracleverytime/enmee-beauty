@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import '../models/product.dart';
+import '../theme/app_theme.dart';
 
 class AddProductScreen extends StatefulWidget {
   final Product? product;
@@ -187,27 +188,48 @@ class _AddProductScreenState extends State<AddProductScreen> {
     final isEditing = widget.product != null;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: context.backgroundColor,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: context.backgroundColor,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Color(0xFF212121)),
+          icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Text(
-          isEditing ? 'Edit Produk' : 'Tambah Produk',
-          style: const TextStyle(
-            color: Color(0xFF212121),
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
+        title: Container(
+          margin: const EdgeInsets.only(right: 48),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: context.borderColor.withOpacity(0.5),
+              width: 1,
+            ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Text(
+            isEditing ? 'Edit Produk' : 'Tambah Produk',
+            style: TextStyle(
+              color: context.textPrimary,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
           ),
         ),
+        centerTitle: true,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Form(
                 key: _formKey,
                 child: Column(
