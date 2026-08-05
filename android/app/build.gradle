@@ -28,7 +28,7 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.skincare_app"
+    namespace "com.example.enmee_beauty"
     compileSdk 36
     ndkVersion "28.2.13676358"
 
@@ -46,7 +46,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.example.skincare_app"
+        applicationId "com.example.enmee_beauty"
         minSdkVersion flutter.minSdkVersion
         targetSdk 36
         versionCode flutterVersionCode.toInteger()
