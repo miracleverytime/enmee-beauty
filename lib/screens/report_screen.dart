@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'package:intl/intl.dart';
 import '../database/database_helper.dart';
 import '../utils/page_transitions.dart';
@@ -416,28 +417,40 @@ class _ReportScreenState extends State<ReportScreen> {
 
   Widget _buildBottomBar() {
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      height: 70,
       decoration: BoxDecoration(
-        color: context.surfaceColor,
-        border: Border(
-          top: BorderSide(color: context.borderColor, width: 1),
+        color: context.surfaceColor.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: context.borderColor.withOpacity(0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: SafeArea(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Expanded(child: _buildNavItem(Icons.inventory_2_outlined, 'Produk', false, () => navigateFade(context, const ProductListScreen()))),
-            Expanded(child: _buildNavItem(Icons.receipt_long_outlined, 'Transaksi', false, () => navigateFade(context, const TransactionListScreen()))),
-            Expanded(child: _buildNavItem(Icons.bar_chart, 'Laporan', true, () {})),
-          ],
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: context.surfaceColor.withOpacity(0.7),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(child: _buildNavItem(Icons.inventory_2_outlined, 'Produk', false, () => navigateFade(context, const ProductListScreen()))),
+                Expanded(child: _buildNavItem(Icons.receipt_long_outlined, 'Transaksi', false, () => navigateFade(context, const TransactionListScreen()))),
+                const SizedBox(width: 60), // Space for FAB
+                Expanded(child: _buildNavItem(Icons.bar_chart, 'Laporan', true, () {})),
+                Expanded(child: _buildNavItem(Icons.settings_outlined, 'Setting', false, () => Navigator.pushNamed(context, '/settings'))),
+              ],
+            ),
+          ),
         ),
       ),
     );

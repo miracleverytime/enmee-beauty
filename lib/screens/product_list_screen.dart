@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import '../database/database_helper.dart';
 import '../models/product.dart';
 import '../utils/page_transitions.dart';
@@ -156,14 +157,37 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ],
               ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () async {
-          await navigateTo(context, const AddProductScreen());
-          _loadData();
-        },
-        backgroundColor: AppColors.primary,
-        child: const Icon(Icons.add, color: Colors.white),
+      floatingActionButton: Container(
+        width: 65,
+        height: 65,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          gradient: LinearGradient(
+            colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.primary.withOpacity(0.4),
+              blurRadius: 20,
+              offset: const Offset(0, 8),
+            ),
+          ],
+        ),
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: () async {
+              await navigateTo(context, const AddProductScreen());
+              _loadData();
+            },
+            customBorder: const CircleBorder(),
+            child: const Icon(Icons.add, color: Colors.white, size: 32),
+          ),
+        ),
       ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: _buildBottomBar(),
     );
   }
@@ -802,50 +826,67 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   Widget _buildBottomBar() {
     return Container(
+      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
+      height: 70,
       decoration: BoxDecoration(
-        color: context.surfaceColor,
-        border: Border(
-          top: BorderSide(color: context.borderColor, width: 1),
+        color: context.surfaceColor.withOpacity(0.8),
+        borderRadius: BorderRadius.circular(24),
+        border: Border.all(
+          color: context.borderColor.withOpacity(0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, -2),
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
-      child: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Expanded(
-                child: _buildNavItem(
-                  Icons.inventory_2,
-                  'Produk',
-                  true,
-                  () {},
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
+          child: Container(
+            color: context.surfaceColor.withOpacity(0.7),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Expanded(
+                  child: _buildNavItem(
+                    Icons.inventory_2,
+                    'Produk',
+                    true,
+                    () {},
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _buildNavItem(
-                  Icons.receipt_long_outlined,
-                  'Transaksi',
-                  false,
-                  () => navigateFade(context, const TransactionListScreen()),
+                Expanded(
+                  child: _buildNavItem(
+                    Icons.receipt_long_outlined,
+                    'Transaksi',
+                    false,
+                    () => navigateFade(context, const TransactionListScreen()),
+                  ),
                 ),
-              ),
-              Expanded(
-                child: _buildNavItem(
-                  Icons.bar_chart_outlined,
-                  'Laporan',
-                  false,
-                  () => navigateFade(context, const ReportScreen()),
+                const SizedBox(width: 60), // Space for FAB
+                Expanded(
+                  child: _buildNavItem(
+                    Icons.bar_chart_outlined,
+                    'Laporan',
+                    false,
+                    () => navigateFade(context, const ReportScreen()),
+                  ),
                 ),
-              ),
-            ],
+                Expanded(
+                  child: _buildNavItem(
+                    Icons.settings_outlined,
+                    'Setting',
+                    false,
+                    () => Navigator.pushNamed(context, '/settings'),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

@@ -8,6 +8,7 @@ import 'screens/add_product_screen.dart';
 import 'screens/transaction_list_screen.dart';
 import 'screens/add_transaction_screen.dart';
 import 'screens/report_screen.dart';
+import 'screens/settings_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -73,6 +74,7 @@ class _SkincareAppState extends State<SkincareApp> {
         '/transactions': (context) => const TransactionListScreen(),
         '/add-transaction': (context) => const AddTransactionScreen(),
         '/report': (context) => const ReportScreen(),
+        '/settings': (context) => const SettingsScreen(),
       },
     );
   }
