@@ -45,10 +45,14 @@ class _AddProductScreenState extends State<AddProductScreen> {
       _sellPriceController.text = widget.product!.sellPrice.toString();
       _selectedCategory = widget.product!.category;
     }
+    _buyPriceController.addListener(_onPriceChanged);
+    _sellPriceController.addListener(_onPriceChanged);
   }
 
   @override
   void dispose() {
+    _buyPriceController.removeListener(_onPriceChanged);
+    _sellPriceController.removeListener(_onPriceChanged);
     _nameController.dispose();
     _stockController.dispose();
     _buyPriceController.dispose();
@@ -57,44 +61,53 @@ class _AddProductScreenState extends State<AddProductScreen> {
   }
 
   String _calculateMargin() {
-    final buyPrice = double.tryParse(_buyPriceController.text) ?? 0;
-    final sellPrice = double.tryParse(_sellPriceController.text) ?? 0;
+    final buyText = _buyPriceController.text;
+    final sellText = _sellPriceController.text;
+    if (buyText.isEmpty || sellText.isEmpty) {
+      return 'Rp 0 - 0%';
+    }
+    final buyPrice = double.tryParse(buyText) ?? 0;
+    final sellPrice = double.tryParse(sellText) ?? 0;
     final margin = sellPrice - buyPrice;
     final marginPercent = buyPrice > 0 ? (margin / buyPrice * 100) : 0;
     return 'Rp ${margin.toStringAsFixed(0)} - ${marginPercent.toStringAsFixed(0)}%';
   }
 
+  void _onPriceChanged() {
+    if (mounted) setState(() {});
+  }
+
   void _showCategoryPicker() {
     showModalBottomSheet(
       context: context,
-      backgroundColor: Colors.white,
+      backgroundColor: context.surfaceColor,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (BuildContext context) {
+      builder: (sheetContext) {
         return Container(
           padding: const EdgeInsets.symmetric(vertical: 20),
-          decoration: const BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+          decoration: BoxDecoration(
+            color: sheetContext.surfaceColor,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                 child: Text(
                   'PILIH KATEGORI',
                   style: TextStyle(
                     fontSize: 11,
                     fontWeight: FontWeight.w600,
                     letterSpacing: 1.0,
-                    color: Color(0xFF616161),
+                    color: sheetContext.textSecondary,
                   ),
                 ),
               ),
-              const Divider(height: 1, color: Color(0xFFE0E0E0)),
+              Divider(height: 1, color: sheetContext.borderColor),
               Flexible(
                 child: ListView.builder(
                   shrinkWrap: true,
@@ -105,7 +118,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     return InkWell(
                       onTap: () {
                         setState(() => _selectedCategory = category);
-                        Navigator.pop(context);
+                        Navigator.pop(sheetContext);
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
@@ -117,13 +130,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: isSelected ? FontWeight.w500 : FontWeight.normal,
-                                color: const Color(0xFF212121),
+                                color: sheetContext.textPrimary,
                               ),
                             ),
                             if (isSelected)
-                              const Icon(
+                              Icon(
                                 Icons.check,
-                                color: Color(0xFF212121),
+                                color: sheetContext.textPrimary,
                                 size: 24,
                               ),
                           ],
@@ -196,32 +209,12 @@ class _AddProductScreenState extends State<AddProductScreen> {
           icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Container(
-          margin: const EdgeInsets.only(right: 48),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: context.borderColor.withOpacity(0.5),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Text(
-            isEditing ? 'Edit Produk' : 'Tambah Produk',
-            style: TextStyle(
-              color: context.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
+        title: Text(
+          isEditing ? 'Edit Produk' : 'Tambah Produk',
+          style: TextStyle(
+            color: context.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
@@ -235,41 +228,41 @@ class _AddProductScreenState extends State<AddProductScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    const Text(
+                    Text(
                       'INFORMASI PRODUK',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1.0,
-                        color: Color(0xFF616161),
+                        color: context.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
+                        color: context.secondaryColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Nama',
-                            style: TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                            style: TextStyle(fontSize: 15, color: context.textSecondary),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _nameController,
                               textAlign: TextAlign.right,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: 'Brightening Serum',
-                                hintStyle: TextStyle(color: Color(0xFFBDBDBD)),
+                                hintStyle: TextStyle(color: context.textMuted),
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
                               ),
-                              style: const TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                              style: TextStyle(fontSize: 15, color: context.textPrimary),
                               validator: (value) => value == null || value.trim().isEmpty ? 'Nama produk wajib diisi' : null,
                             ),
                           ),
@@ -281,25 +274,25 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       onTap: _showCategoryPicker,
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF5F5F5),
+                          color: context.secondaryColor,
                           borderRadius: BorderRadius.circular(12),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                          const Text(
+                          Text(
                             'Kategori',
-                            style: TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                            style: TextStyle(fontSize: 15, color: context.textSecondary),
                           ),
                             Row(
                               children: [
                                 Text(
                                   _selectedCategory,
-                                  style: const TextStyle(fontSize: 15, color: Color(0xFF212121)),
+                                  style: TextStyle(fontSize: 15, color: context.textPrimary),
                                 ),
                                 const SizedBox(width: 4),
-                                const Icon(Icons.keyboard_arrow_down, color: Color(0xFF212121), size: 20),
+                                Icon(Icons.keyboard_arrow_down, color: context.textPrimary, size: 20),
                               ],
                             ),
                           ],
@@ -307,41 +300,41 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    const Text(
+                    Text(
                       'STOK & HARGA',
                       style: TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 1.0,
-                        color: Color(0xFF616161),
+                        color: context.textSecondary,
                       ),
                     ),
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
+                        color: context.secondaryColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Stok',
-                            style: TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                            style: TextStyle(fontSize: 15, color: context.textSecondary),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _stockController,
                               textAlign: TextAlign.right,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: '0',
-                                hintStyle: TextStyle(color: Color(0xFFBDBDBD)),
+                                hintStyle: TextStyle(color: context.textMuted),
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
                               ),
-                              style: const TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                              style: TextStyle(fontSize: 15, color: context.textPrimary),
                               keyboardType: TextInputType.number,
                               validator: (value) {
                                 if (value == null || value.isEmpty) return 'Stok wajib diisi';
@@ -357,29 +350,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
+                        color: context.secondaryColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Harga beli',
-                            style: TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                            style: TextStyle(fontSize: 15, color: context.textSecondary),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _buyPriceController,
                               textAlign: TextAlign.right,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: '0',
-                                hintStyle: TextStyle(color: Color(0xFFBDBDBD)),
+                                hintStyle: TextStyle(color: context.textMuted),
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
                               ),
-                              style: const TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                              style: TextStyle(fontSize: 15, color: context.textPrimary),
                               keyboardType: TextInputType.number,
                               validator: (value) {
                                 if (value == null || value.isEmpty) return 'Harga beli wajib diisi';
@@ -394,29 +387,29 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     const SizedBox(height: 12),
                     Container(
                       decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
+                        color: context.secondaryColor,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Harga jual',
-                            style: TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                            style: TextStyle(fontSize: 15, color: context.textSecondary),
                           ),
                           Expanded(
                             child: TextFormField(
                               controller: _sellPriceController,
                               textAlign: TextAlign.right,
-                              decoration: const InputDecoration(
+                              decoration: InputDecoration(
                                 border: InputBorder.none,
                                 hintText: '0',
-                                hintStyle: TextStyle(color: Color(0xFFBDBDBD)),
+                                hintStyle: TextStyle(color: context.textMuted),
                                 isDense: true,
                                 contentPadding: EdgeInsets.zero,
                               ),
-                              style: const TextStyle(fontSize: 15, color: Color(0xFF424242)),
+                              style: TextStyle(fontSize: 15, color: context.textPrimary),
                               keyboardType: TextInputType.number,
                               validator: (value) {
                                 if (value == null || value.isEmpty) return 'Harga jual wajib diisi';
@@ -437,13 +430,13 @@ class _AddProductScreenState extends State<AddProductScreen> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Margin per unit',
-                            style: TextStyle(fontSize: 14, color: Color(0xFF424242)),
+                            style: TextStyle(fontSize: 14, color: context.textSecondary),
                           ),
                           Text(
                             _calculateMargin(),
-                            style: const TextStyle(fontSize: 14, color: Color(0xFF212121), fontWeight: FontWeight.w500),
+                            style: TextStyle(fontSize: 14, color: context.textPrimary, fontWeight: FontWeight.w500),
                           ),
                         ],
                       ),
@@ -452,7 +445,7 @@ class _AddProductScreenState extends State<AddProductScreen> {
                     ElevatedButton(
                       onPressed: _saveProduct,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF9E9E9E),
+                        backgroundColor: context.primaryColor,
                         foregroundColor: Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

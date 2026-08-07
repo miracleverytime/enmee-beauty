@@ -112,32 +112,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
           icon: Icon(Icons.arrow_back, color: context.textPrimary),
           onPressed: () => Navigator.pop(context),
         ),
-        title: Container(
-          margin: const EdgeInsets.only(right: 48),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: context.borderColor.withOpacity(0.5),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Text(
-            'Tambah Transaksi',
-            style: TextStyle(
-              color: context.textPrimary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-            textAlign: TextAlign.center,
+        title: Text(
+          'Tambah Transaksi',
+          style: TextStyle(
+            color: context.textPrimary,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
           ),
         ),
         centerTitle: true,
@@ -156,7 +136,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF5F5F5),
+                            color: context.secondaryColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Form(
@@ -164,12 +144,12 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                const Text(
+                                Text(
                                   'DETAIL PENJUALAN',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.w500,
-                                    color: Color(0xFF757575),
+                                    color: context.textSecondary,
                                     letterSpacing: 0.5,
                                   ),
                                 ),
@@ -185,9 +165,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                     alignment: Alignment.centerRight,
                                     child: Text(
                                       'Sisa stok ${_selectedProduct!.stock} unit',
-                                      style: const TextStyle(
+                                      style: TextStyle(
                                         fontSize: 12,
-                                        color: Color(0xFF757575),
+                                        color: context.textSecondary,
                                       ),
                                     ),
                                   ),
@@ -201,7 +181,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                           margin: const EdgeInsets.symmetric(horizontal: 20),
                           padding: const EdgeInsets.all(20),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF5F5F5),
+                            color: context.secondaryColor,
                             borderRadius: BorderRadius.circular(12),
                           ),
                           child: Column(
@@ -209,21 +189,21 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'TOTAL HARGA',
                                     style: TextStyle(
                                       fontSize: 12,
                                       fontWeight: FontWeight.w500,
-                                      color: Color(0xFF757575),
+                                      color: context.textSecondary,
                                       letterSpacing: 0.5,
                                     ),
                                   ),
                                   Text(
                                     'Rp ${_formatCurrency(totalPrice)}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                                      color: context.textPrimary,
                                     ),
                                   ),
                                 ],
@@ -232,19 +212,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
-                                  const Text(
+                                  Text(
                                     'Estimasi profit',
                                     style: TextStyle(
                                       fontSize: 12,
-                                      color: Color(0xFF757575),
+                                      color: context.textSecondary,
                                     ),
                                   ),
                                   Text(
                                     'Rp ${_formatCurrency(profit)}',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
-                                      color: Colors.black,
+                                      color: context.successColor,
                                     ),
                                   ),
                                 ],
@@ -261,7 +241,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                             child: ElevatedButton(
                               onPressed: _saveTransaction,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.black,
+                                backgroundColor: context.primaryColor,
                                 foregroundColor: Colors.white,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
@@ -290,7 +270,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: context.surfaceColor,
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -298,9 +278,9 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
         children: [
           Text(
             label,
-            style: const TextStyle(
+            style: TextStyle(
               fontSize: 14,
-              color: Color(0xFF757575),
+              color: context.textSecondary,
             ),
           ),
           if (isDropdown)
@@ -312,28 +292,30 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   contentPadding: EdgeInsets.zero,
                   isDense: true,
                 ),
-                hint: const Text(
+                hint: Text(
                   'Pilih produk',
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black,
+                    color: context.textMuted,
                   ),
                   textAlign: TextAlign.right,
                   overflow: TextOverflow.ellipsis,
                 ),
                 isExpanded: true,
                 alignment: Alignment.centerRight,
+                dropdownColor: context.surfaceColor,
+                icon: Icon(Icons.keyboard_arrow_down, color: context.textPrimary),
                 items: _products.map((product) {
                   return DropdownMenuItem(
                     value: product,
                     alignment: Alignment.centerRight,
                     child: Text(
                       product.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontSize: 14,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        color: context.textPrimary,
                       ),
                       textAlign: TextAlign.right,
                     ),
@@ -347,10 +329,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                       alignment: Alignment.centerRight,
                       child: Text(
                         product.name,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black,
+                          color: context.textPrimary,
                         ),
                         textAlign: TextAlign.right,
                         overflow: TextOverflow.ellipsis,
@@ -370,10 +352,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                   contentPadding: EdgeInsets.zero,
                   isDense: true,
                 ),
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: context.textPrimary,
                 ),
                 textAlign: TextAlign.right,
                 keyboardType: TextInputType.number,
@@ -393,10 +375,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             Flexible(
               child: Text(
                 value,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.w600,
-                  color: Colors.black,
+                  color: context.textPrimary,
                 ),
                 textAlign: TextAlign.right,
                 overflow: TextOverflow.ellipsis,
