@@ -80,8 +80,17 @@ class _MainShellState extends State<MainShell> {
           const SettingsScreen(),
         ],
       ),
-      floatingActionButton: _showFab
-          ? Container(
+      floatingActionButton: AnimatedScale(
+        scale: _showFab ? 1.0 : 0.0,
+        duration: const Duration(milliseconds: 280),
+        curve: Curves.easeOutCubic,
+        child: AnimatedOpacity(
+          opacity: _showFab ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 280),
+          curve: Curves.easeOutCubic,
+          child: IgnorePointer(
+            ignoring: !_showFab,
+            child: Container(
               width: 65,
               height: 65,
               decoration: BoxDecoration(
@@ -103,12 +112,15 @@ class _MainShellState extends State<MainShell> {
                   child: const Icon(Icons.add, color: Colors.white, size: 32),
                 ),
               ),
-            )
-          : null,
+            ),
+          ),
+        ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       bottomNavigationBar: AppBottomNavBar(
         currentIndex: _currentIndex,
         onTap: _onTabChanged,
+        showFab: _showFab,
       ),
     );
   }

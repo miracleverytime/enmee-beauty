@@ -11,8 +11,10 @@ class AppNavItem {
 
 /// Bottom navigation bar bersama untuk 4 tab utama.
 ///
-/// Slot tengah (di antara item ke-2 dan ke-3) dikosongkan untuk FAB
-/// yang diletakkan dengan `FloatingActionButtonLocation.centerDocked`.
+/// [showFab] menentukan apakah slot tengah harus menyediakan ruang untuk
+/// FAB (centerDocked). Saat [showFab] berubah, slot tengah beranimasi
+/// dari lebar 60 ke 0 sehingga item "menyusut" ke tengah dengan mulus
+/// ketika FAB menghilang.
 class AppBottomNavBar extends StatelessWidget {
   static const List<AppNavItem> items = [
     AppNavItem(icon: Icons.inventory_2_outlined, label: 'Produk'),
@@ -21,13 +23,17 @@ class AppBottomNavBar extends StatelessWidget {
     AppNavItem(icon: Icons.settings_outlined, label: 'Setting'),
   ];
 
+  static const double _fabGap = 60;
+
   final int currentIndex;
   final ValueChanged<int> onTap;
+  final bool showFab;
 
   const AppBottomNavBar({
     super.key,
     required this.currentIndex,
     required this.onTap,
+    required this.showFab,
   });
 
   @override
@@ -70,7 +76,12 @@ class AppBottomNavBar extends StatelessWidget {
                     onTap: () => onTap(i),
                   ),
                 ),
-                if (i == 1) const SizedBox(width: 60),
+                if (i == 1)
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 280),
+                    curve: Curves.easeOutCubic,
+                    width: showFab ? _fabGap : 0,
+                  ),
               ],
             ],
           ),
