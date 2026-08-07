@@ -3,12 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'screens/product_list_screen.dart';
+import 'screens/main_shell.dart';
 import 'screens/add_product_screen.dart';
-import 'screens/transaction_list_screen.dart';
 import 'screens/add_transaction_screen.dart';
-import 'screens/report_screen.dart';
-import 'screens/settings_screen.dart';
 import 'theme/app_theme.dart';
 
 void main() async {
@@ -20,43 +17,67 @@ void main() async {
     DeviceOrientation.portraitDown,
   ]);
   SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  
-  // Load saved theme preference
+
+  // Load saved preferences synchronously so first frame is correct.
   final prefs = await SharedPreferences.getInstance();
   final isDark = prefs.getBool('isDarkMode') ?? true; // Default to dark
-  
-  runApp(SkincareApp(isDarkMode: isDark));
+  final isStatsExpanded = prefs.getBool('stats_expanded') ?? false;
+
+  runApp(SkincareApp(
+    isDarkMode: isDark,
+    initialStatsExpanded: isStatsExpanded,
+  ));
 }
 
 class SkincareApp extends StatefulWidget {
   final bool isDarkMode;
-  
-  const SkincareApp({super.key, required this.isDarkMode});
+  final bool initialStatsExpanded;
+
+  const SkincareApp({
+    super.key,
+    required this.isDarkMode,
+    this.initialStatsExpanded = false,
+  });
 
   @override
   State<SkincareApp> createState() => _SkincareAppState();
 
   static _SkincareAppState? of(BuildContext context) =>
       context.findAncestorStateOfType<_SkincareAppState>();
+
+  static bool getStatsExpanded(BuildContext context) {
+    return of(context)?._isStatsExpanded ?? false;
+  }
 }
 
 class _SkincareAppState extends State<SkincareApp> {
   late ThemeMode _themeMode;
+  late bool _isStatsExpanded;
 
   @override
   void initState() {
     super.initState();
     _themeMode = widget.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    _isStatsExpanded = widget.initialStatsExpanded;
   }
 
   Future<void> toggleTheme() async {
     setState(() {
       _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
     });
-    
+
     // Save theme preference
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('isDarkMode', _themeMode == ThemeMode.dark);
+  }
+
+  Future<void> setStatsExpanded(bool value) async {
+    if (_isStatsExpanded == value) return;
+    setState(() {
+      _isStatsExpanded = value;
+    });
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('stats_expanded', value);
   }
 
   @override
@@ -69,12 +90,24 @@ class _SkincareAppState extends State<SkincareApp> {
       themeMode: _themeMode,
       initialRoute: '/',
       routes: {
-        '/': (context) => const ProductListScreen(),
+        '/': (context) => MainShell(
+              initialIndex: 0,
+              statsInitiallyExpanded: _isStatsExpanded,
+            ),
+        '/transactions': (context) => MainShell(
+              initialIndex: 1,
+              statsInitiallyExpanded: _isStatsExpanded,
+            ),
+        '/report': (context) => MainShell(
+              initialIndex: 2,
+              statsInitiallyExpanded: _isStatsExpanded,
+            ),
+        '/settings': (context) => MainShell(
+              initialIndex: 3,
+              statsInitiallyExpanded: _isStatsExpanded,
+            ),
         '/add-product': (context) => const AddProductScreen(),
-        '/transactions': (context) => const TransactionListScreen(),
         '/add-transaction': (context) => const AddTransactionScreen(),
-        '/report': (context) => const ReportScreen(),
-        '/settings': (context) => const SettingsScreen(),
       },
     );
   }

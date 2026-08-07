@@ -17,7 +17,7 @@ dependencies:
   pdf: ^3.10.7
   printing: ^5.11.1
   cupertino_icons: ^1.0.6
-  shared_preferences: ^2.2.2
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:
@@ -28,7 +28,9 @@ dev_dependencies:
 flutter_launcher_icons:
   android: true
   ios: false
-  image_path: "assets/icon.png"
+  image_path: "enmee-icon-2-clinic.png"
+  adaptive_icon_background: "#F9F6ED"
+  adaptive_icon_foreground: "enmee-icon-2-clinic.png"
 
 flutter:
   uses-material-design: true

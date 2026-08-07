@@ -1,22 +1,16 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import '../database/database_helper.dart';
 import '../models/transaction.dart' as model;
-import '../utils/page_transitions.dart';
 import '../theme/app_theme.dart';
-import 'add_transaction_screen.dart';
-import 'product_list_screen.dart';
-import 'report_screen.dart';
-import 'settings_screen.dart';
 
 class TransactionListScreen extends StatefulWidget {
   const TransactionListScreen({super.key});
 
   @override
-  State<TransactionListScreen> createState() => _TransactionListScreenState();
+  State<TransactionListScreen> createState() => TransactionListScreenState();
 }
 
-class _TransactionListScreenState extends State<TransactionListScreen> {
+class TransactionListScreenState extends State<TransactionListScreen> {
   final DatabaseHelper _db = DatabaseHelper.instance;
   List<model.Transaction> _transactions = [];
   bool _isLoading = true;
@@ -24,10 +18,10 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   @override
   void initState() {
     super.initState();
-    _loadData();
+    loadData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> loadData() async {
     setState(() => _isLoading = true);
     try {
       final data = await _db.getAllTransactions();
@@ -63,7 +57,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                   const SnackBar(content: Text('Transaksi berhasil dihapus'), backgroundColor: Colors.green),
                 );
               }
-              _loadData();
+              loadData();
             },
             style: TextButton.styleFrom(foregroundColor: Colors.red),
             child: const Text('Hapus'),
@@ -81,52 +75,17 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
       return sum + (margin * t.quantity);
     });
 
-    return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  _buildHeader(),
-                  _buildSummaryStats(totalRevenue, totalProfit),
-                  const SizedBox(height: 12),
-                  _buildHistorySection(),
-                ],
-              ),
-      ),
-      floatingActionButton: Container(
-        width: 65,
-        height: 65,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+    return SafeArea(
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                _buildHeader(),
+                _buildSummaryStats(totalRevenue, totalProfit),
+                const SizedBox(height: 12),
+                _buildHistorySection(),
+              ],
             ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () async {
-              await navigateTo(context, const AddTransactionScreen());
-              _loadData();
-            },
-            customBorder: const CircleBorder(),
-            child: const Icon(Icons.add, color: Colors.white, size: 32),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomBar(),
     );
   }
 
@@ -322,7 +281,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
               child: _transactions.isEmpty
                   ? _buildEmptyState()
                   : RefreshIndicator(
-                      onRefresh: _loadData,
+                      onRefresh: loadData,
                        child: ListView.separated(
                         padding: const EdgeInsets.only(bottom: 80),
                         itemCount: _transactions.length,
@@ -422,77 +381,6 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
           SizedBox(height: 8),
           Text('Transaksi akan muncul di sini', style: TextStyle(color: Colors.grey)),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      height: 70,
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.darkForeground.withOpacity(0.1),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 20,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: AppColors.darkSurface.withOpacity(0.8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(child: _buildNavItem(Icons.inventory_2_outlined, 'Produk', false, () => navigateFade(context, const ProductListScreen()))),
-                Expanded(child: _buildNavItem(Icons.receipt_long, 'Transaksi', true, () {})),
-                const SizedBox(width: 60), // Space for FAB
-                Expanded(child: _buildNavItem(Icons.bar_chart_outlined, 'Laporan', false, () => navigateFade(context, const ReportScreen()))),
-                Expanded(child: _buildNavItem(Icons.settings_outlined, 'Setting', false, () => navigateFade(context, const SettingsScreen()))),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
       ),
     );
   }

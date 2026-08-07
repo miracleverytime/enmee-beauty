@@ -1,28 +1,29 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import '../database/database_helper.dart';
 import '../models/product.dart';
-import '../utils/page_transitions.dart';
 import '../theme/app_theme.dart';
+import '../utils/page_transitions.dart';
 import '../widgets/product_card.dart';
-import '../widgets/summary_stat_card.dart';
 import '../widgets/skeleton_loader.dart';
+import '../widgets/collapsible_stats.dart';
 import '../main.dart';
 import 'add_product_screen.dart';
-import 'transaction_list_screen.dart';
-import 'report_screen.dart';
-import 'settings_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
-  const ProductListScreen({super.key});
+  final bool initialStatsExpanded;
+
+  const ProductListScreen({
+    super.key,
+    this.initialStatsExpanded = false,
+  });
 
   @override
-  State<ProductListScreen> createState() => _ProductListScreenState();
+  State<ProductListScreen> createState() => ProductListScreenState();
 }
 
 enum SortOption { nameAsc, price, stock, margin }
 
-class _ProductListScreenState extends State<ProductListScreen> {
+class ProductListScreenState extends State<ProductListScreen> {
   final DatabaseHelper _db = DatabaseHelper.instance;
   List<Product> _products = [];
   List<Product> _filteredProducts = [];
@@ -33,14 +34,26 @@ class _ProductListScreenState extends State<ProductListScreen> {
   bool _showLowStockOnly = false;
   SortOption _sortOption = SortOption.nameAsc;
   int _notificationCount = 3; // Placeholder untuk notifikasi
+  final GlobalKey<CollapsibleStatsState> _statsKey = GlobalKey<CollapsibleStatsState>();
+  bool _isStatsExpanded = false;
+
+  void _toggleStats() {
+    final nextValue = !_isStatsExpanded;
+    setState(() {
+      _isStatsExpanded = nextValue;
+    });
+    _statsKey.currentState?.setExpanded(nextValue);
+    SkincareApp.of(context)?.setStatsExpanded(nextValue);
+  }
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _isStatsExpanded = widget.initialStatsExpanded;
+    loadData();
   }
 
-  Future<void> _loadData() async {
+  Future<void> loadData() async {
     setState(() => _isLoading = true);
     try {
       final products = await _db.getAllProducts();
@@ -130,7 +143,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                   ),
                 );
               }
-              _loadData();
+              loadData();
             },
             style: TextButton.styleFrom(foregroundColor: context.destructiveColor),
             child: const Text('Hapus'),
@@ -142,54 +155,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: SafeArea(
-        child: _isLoading
-            ? _buildLoadingState()
-            : Column(
-                children: [
-                  _buildAppBar(),
-                  _buildSummaryStats(),
-                  const SizedBox(height: 12),
-                  _buildToolbar(),
-                  const SizedBox(height: 12),
-                  Expanded(child: _buildProductList()),
-                ],
-              ),
-      ),
-      floatingActionButton: Container(
-        width: 65,
-        height: 65,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          gradient: LinearGradient(
-            colors: [AppColors.primary, AppColors.primary.withOpacity(0.8)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.primary.withOpacity(0.4),
-              blurRadius: 20,
-              offset: const Offset(0, 8),
+    return SafeArea(
+      child: _isLoading
+          ? _buildLoadingState()
+          : Column(
+              children: [
+                _buildAppBar(),
+                CollapsibleStats(
+                  key: _statsKey,
+                  initialExpanded: _isStatsExpanded,
+                  child: _buildSummaryStats(),
+                ),
+                const SizedBox(height: 12),
+                _buildToolbar(),
+                const SizedBox(height: 12),
+                Expanded(child: _buildProductList()),
+              ],
             ),
-          ],
-        ),
-        child: Material(
-          color: Colors.transparent,
-          child: InkWell(
-            onTap: () async {
-              await navigateTo(context, const AddProductScreen());
-              _loadData();
-            },
-            customBorder: const CircleBorder(),
-            child: const Icon(Icons.add, color: Colors.white, size: 32),
-          ),
-        ),
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-      bottomNavigationBar: _buildBottomBar(),
     );
   }
 
@@ -237,68 +219,43 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget _buildAppBar() {
-    return Container(
-      margin: const EdgeInsets.all(20),
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: context.borderColor.withOpacity(0.5),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(
-            'Daftar Produk',
-            style: TextStyle(
-              color: context.textPrimary,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        Container(
+          margin: const EdgeInsets.all(20),
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: context.surfaceColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: context.borderColor.withOpacity(0.5),
+              width: 1,
             ),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
           ),
-          Row(
-            mainAxisSize: MainAxisSize.min,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // Dark mode toggle
-              Container(
-                width: 36,
-                height: 36,
-                decoration: BoxDecoration(
-                  color: context.backgroundColor,
-                  borderRadius: BorderRadius.circular(10),
-                  border: Border.all(
-                    color: context.borderColor.withOpacity(0.3),
-                    width: 1,
-                  ),
-                ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  onPressed: () {
-                    SkincareApp.of(context)?.toggleTheme();
-                  },
-                  icon: Icon(
-                    context.isDark ? Icons.wb_sunny_outlined : Icons.nights_stay_outlined,
-                    color: context.textSecondary,
-                    size: 18,
-                  ),
+              Text(
+                'Daftar Produk',
+                style: TextStyle(
+                  color: context.textPrimary,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(width: 8),
-              // Notification icon with badge
-              Stack(
-                clipBehavior: Clip.none,
+              Row(
+                mainAxisSize: MainAxisSize.min,
                 children: [
+                  // Dark mode toggle
                   Container(
                     width: 36,
                     height: 36,
@@ -313,58 +270,136 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     child: IconButton(
                       padding: EdgeInsets.zero,
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Fitur notifikasi akan segera hadir'),
-                            duration: Duration(seconds: 2),
-                          ),
-                        );
+                        SkincareApp.of(context)?.toggleTheme();
                       },
                       icon: Icon(
-                        Icons.notifications_outlined,
+                        context.isDark ? Icons.wb_sunny_outlined : Icons.nights_stay_outlined,
                         color: context.textSecondary,
                         size: 18,
                       ),
                     ),
                   ),
-                  if (_notificationCount > 0)
-                    Positioned(
-                      right: 4,
-                      top: 4,
-                      child: Container(
-                        padding: const EdgeInsets.all(3),
+                  const SizedBox(width: 8),
+                  // Notification icon with badge
+                  Stack(
+                    clipBehavior: Clip.none,
+                    children: [
+                      Container(
+                        width: 36,
+                        height: 36,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFEF4444),
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: const Color(0xFFEF4444).withOpacity(0.3),
-                              blurRadius: 4,
-                              offset: const Offset(0, 1),
-                            ),
-                          ],
-                        ),
-                        constraints: const BoxConstraints(
-                          minWidth: 14,
-                          minHeight: 14,
-                        ),
-                        child: Text(
-                          _notificationCount > 9 ? '9+' : '$_notificationCount',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 7,
-                            fontWeight: FontWeight.bold,
+                          color: context.backgroundColor,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            color: context.borderColor.withOpacity(0.3),
+                            width: 1,
                           ),
-                          textAlign: TextAlign.center,
+                        ),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          onPressed: () {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text('Fitur notifikasi akan segera hadir'),
+                                duration: Duration(seconds: 2),
+                              ),
+                            );
+                          },
+                          icon: Icon(
+                            Icons.notifications_outlined,
+                            color: context.textSecondary,
+                            size: 18,
+                          ),
                         ),
                       ),
-                    ),
+                      if (_notificationCount > 0)
+                        Positioned(
+                          right: 4,
+                          top: 4,
+                          child: Container(
+                            padding: const EdgeInsets.all(3),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFEF4444),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: const Color(0xFFEF4444).withOpacity(0.3),
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 1),
+                                ),
+                              ],
+                            ),
+                            constraints: const BoxConstraints(
+                              minWidth: 14,
+                              minHeight: 14,
+                            ),
+                            child: Text(
+                              _notificationCount > 9 ? '9+' : '$_notificationCount',
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 7,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ],
               ),
             ],
           ),
-        ],
-      ),
+        ),
+        // Toggle chevron bar overlapping header
+        Positioned(
+          bottom: 0,
+          left: 0,
+          right: 0,
+          child: Center(
+            child: GestureDetector(
+              onTap: _toggleStats,
+              child: Container(
+                width: 60,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: context.surfaceColor,
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(10),
+                    bottomRight: Radius.circular(10),
+                  ),
+                  border: Border(
+                    left: BorderSide(
+                      color: context.borderColor.withOpacity(0.5),
+                      width: 1,
+                    ),
+                    right: BorderSide(
+                      color: context.borderColor.withOpacity(0.5),
+                      width: 1,
+                    ),
+                    bottom: BorderSide(
+                      color: context.borderColor.withOpacity(0.5),
+                      width: 1,
+                    ),
+                  ),
+                ),
+                child: Center(
+                  child: AnimatedRotation(
+                    turns: _isStatsExpanded ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.easeInOut,
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: context.textMuted.withOpacity(0.5),
+                      size: 14,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -374,53 +409,50 @@ class _ProductListScreenState extends State<ProductListScreen> {
     final lowStockCount = _products.where((p) => p.stock <= kLowStockThreshold).length;
     final averageMargin = _calculateAverageMargin();
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Column(
-        children: [
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  label: 'Total Produk',
-                  value: _formatNumber(totalProducts),
-                  trend: '+2%',
-                  trendColor: const Color(0xFF10B981),
-                ),
+    return Column(
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard(
+                label: 'Total Produk',
+                value: _formatNumber(totalProducts),
+                trend: '+2%',
+                trendColor: const Color(0xFF10B981),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildStatCard(
-                  label: 'Nilai Stok',
-                  value: _formatCurrencyCompact(totalStockValue),
-                  suffix: ' JT',
-                ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildStatCard(
+                label: 'Nilai Stok',
+                value: _formatCurrencyCompact(totalStockValue),
+                suffix: ' JT',
               ),
-            ],
-          ),
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Expanded(
-                child: _buildStatCard(
-                  label: 'Stok Rendah',
-                  value: '$lowStockCount',
-                  badge: 'WARNING',
-                  badgeColor: const Color(0xFFEF4444),
-                ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: _buildStatCard(
+                label: 'Stok Rendah',
+                value: '$lowStockCount',
+                badge: 'WARNING',
+                badgeColor: const Color(0xFFEF4444),
               ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: _buildStatCard(
-                  label: 'Avg Margin',
-                  value: '$averageMargin',
-                  suffix: ' %',
-                ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: _buildStatCard(
+                label: 'Avg Margin',
+                value: '$averageMargin',
+                suffix: ' %',
               ),
-            ],
-          ),
-        ],
-      ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 
@@ -731,7 +763,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
     return Container(
       color: context.backgroundColor,
       child: RefreshIndicator(
-        onRefresh: _loadData,
+        onRefresh: loadData,
         child: ListView.separated(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           itemCount: _filteredProducts.length,
@@ -743,11 +775,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
               averageMargin: _calculateAverageMargin(),
               onTap: () async {
                 await navigateTo(context, AddProductScreen(product: product));
-                _loadData();
+                loadData();
               },
               onEdit: () async {
                 await navigateTo(context, AddProductScreen(product: product));
-                _loadData();
+                loadData();
               },
               onDelete: () => _deleteProduct(product),
             );
@@ -808,7 +840,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
             ElevatedButton.icon(
               onPressed: () async {
                 await navigateTo(context, const AddProductScreen());
-                _loadData();
+                loadData();
               },
               icon: const Icon(Icons.add),
               label: const Text('Tambah Produk Pertama'),
@@ -826,107 +858,6 @@ class _ProductListScreenState extends State<ProductListScreen> {
             ),
           ],
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      height: 70,
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.darkForeground.withOpacity(0.1),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 20,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: AppColors.darkSurface.withOpacity(0.8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(
-                  child: _buildNavItem(
-                    Icons.inventory_2,
-                    'Produk',
-                    true,
-                    () {},
-                  ),
-                ),
-                Expanded(
-                  child: _buildNavItem(
-                    Icons.receipt_long_outlined,
-                    'Transaksi',
-                    false,
-                    () => navigateFade(context, const TransactionListScreen()),
-                  ),
-                ),
-                const SizedBox(width: 60), // Space for FAB
-                Expanded(
-                  child: _buildNavItem(
-                    Icons.bar_chart_outlined,
-                    'Laporan',
-                    false,
-                    () => navigateFade(context, const ReportScreen()),
-                  ),
-                ),
-                Expanded(
-                  child: _buildNavItem(
-                    Icons.settings_outlined,
-                    'Setting',
-                    false,
-                    () => navigateFade(context, const SettingsScreen()),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xs,
-          vertical: AppSpacing.sm,
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-              size: 24,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              label,
-              style: AppTextStyles.labelMedium.copyWith(
-                color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
       ),
     );
   }

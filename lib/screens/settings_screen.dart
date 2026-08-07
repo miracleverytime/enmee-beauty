@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 import '../theme/app_theme.dart';
-import '../utils/page_transitions.dart';
-import 'product_list_screen.dart';
-import 'transaction_list_screen.dart';
-import 'report_screen.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -16,86 +11,82 @@ class SettingsScreen extends StatefulWidget {
 class _SettingsScreenState extends State<SettingsScreen> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            _buildHeader(),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    _buildSettingSection(
-                      'Umum',
-                      [
-                        _buildSettingItem(
-                          Icons.store_outlined,
-                          'Informasi Toko',
-                          'Nama toko, alamat, kontak',
-                          () {},
-                        ),
-                        _buildSettingItem(
-                          Icons.receipt_long_outlined,
-                          'Format Nota',
-                          'Atur format cetak nota',
-                          () {},
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    _buildSettingSection(
-                      'Data',
-                      [
-                        _buildSettingItem(
-                          Icons.backup_outlined,
-                          'Backup Data',
-                          'Cadangkan database',
-                          () {},
-                        ),
-                        _buildSettingItem(
-                          Icons.restore_outlined,
-                          'Restore Data',
-                          'Pulihkan dari backup',
-                          () {},
-                        ),
-                        _buildSettingItem(
-                          Icons.delete_outline,
-                          'Hapus Semua Data',
-                          'Reset database',
-                          () {},
-                          isDestructive: true,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 24),
-                    _buildSettingSection(
-                      'Tentang',
-                      [
-                        _buildSettingItem(
-                          Icons.info_outline,
-                          'Versi Aplikasi',
-                          'v1.0.0',
-                          null,
-                        ),
-                        _buildSettingItem(
-                          Icons.help_outline,
-                          'Bantuan',
-                          'Panduan penggunaan',
-                          () {},
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+    return SafeArea(
+      child: Column(
+        children: [
+          _buildHeader(),
+          Expanded(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildSettingSection(
+                    'Umum',
+                    [
+                      _buildSettingItem(
+                        Icons.store_outlined,
+                        'Informasi Toko',
+                        'Nama toko, alamat, kontak',
+                        () {},
+                      ),
+                      _buildSettingItem(
+                        Icons.receipt_long_outlined,
+                        'Format Nota',
+                        'Atur format cetak nota',
+                        () {},
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSettingSection(
+                    'Data',
+                    [
+                      _buildSettingItem(
+                        Icons.backup_outlined,
+                        'Backup Data',
+                        'Cadangkan database',
+                        () {},
+                      ),
+                      _buildSettingItem(
+                        Icons.restore_outlined,
+                        'Restore Data',
+                        'Pulihkan dari backup',
+                        () {},
+                      ),
+                      _buildSettingItem(
+                        Icons.delete_outline,
+                        'Hapus Semua Data',
+                        'Reset database',
+                        () {},
+                        isDestructive: true,
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+                  _buildSettingSection(
+                    'Tentang',
+                    [
+                      _buildSettingItem(
+                        Icons.info_outline,
+                        'Versi Aplikasi',
+                        'v1.0.0',
+                        null,
+                      ),
+                      _buildSettingItem(
+                        Icons.help_outline,
+                        'Bantuan',
+                        'Panduan penggunaan',
+                        () {},
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
-      bottomNavigationBar: _buildBottomBar(),
     );
   }
 
@@ -236,73 +227,4 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  Widget _buildBottomBar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      height: 70,
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.darkForeground.withOpacity(0.1),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 20,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: AppColors.darkSurface.withOpacity(0.8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(child: _buildNavItem(Icons.inventory_2_outlined, 'Produk', false, () => navigateFade(context, const ProductListScreen()))),
-                Expanded(child: _buildNavItem(Icons.receipt_long_outlined, 'Transaksi', false, () => navigateFade(context, const TransactionListScreen()))),
-                Expanded(child: _buildNavItem(Icons.bar_chart_outlined, 'Laporan', false, () => navigateFade(context, const ReportScreen()))),
-                Expanded(child: _buildNavItem(Icons.settings, 'Setting', true, () {})),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
 }

@@ -1,12 +1,6 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
-import 'package:intl/intl.dart';
 import '../database/database_helper.dart';
-import '../utils/page_transitions.dart';
 import '../theme/app_theme.dart';
-import 'product_list_screen.dart';
-import 'transaction_list_screen.dart';
-import 'settings_screen.dart';
 
 class ReportScreen extends StatefulWidget {
   const ReportScreen({super.key});
@@ -86,23 +80,19 @@ class _ReportScreenState extends State<ReportScreen> {
     final totalProfit = (_summary['total_profit'] ?? 0.0).toDouble();
     final marginPercent = totalRevenue > 0 ? ((totalProfit / totalRevenue) * 100).round() : 0;
 
-    return Scaffold(
-      backgroundColor: context.backgroundColor,
-      body: SafeArea(
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : Column(
-                children: [
-                  _buildHeader(),
-                  _buildPeriodSelector(),
-                  const SizedBox(height: 12),
-                  _buildSummaryStats(totalRevenue, totalProfit, marginPercent, totalTransactions, totalItems),
-                  const SizedBox(height: 12),
-                  _buildProductListSection(),
-                ],
-              ),
-      ),
-      bottomNavigationBar: _buildBottomBar(),
+    return SafeArea(
+      child: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                _buildHeader(),
+                _buildPeriodSelector(),
+                const SizedBox(height: 12),
+                _buildSummaryStats(totalRevenue, totalProfit, marginPercent, totalTransactions, totalItems),
+                const SizedBox(height: 12),
+                _buildProductListSection(),
+              ],
+            ),
     );
   }
 
@@ -412,76 +402,6 @@ class _ReportScreenState extends State<ReportScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget _buildBottomBar() {
-    return Container(
-      margin: const EdgeInsets.fromLTRB(20, 0, 20, 16),
-      height: 70,
-      decoration: BoxDecoration(
-        color: AppColors.darkSurface.withOpacity(0.8),
-        borderRadius: BorderRadius.circular(24),
-        border: Border.all(
-          color: AppColors.darkForeground.withOpacity(0.1),
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.25),
-            blurRadius: 20,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ClipRRect(
-        borderRadius: BorderRadius.circular(24),
-        child: BackdropFilter(
-          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-          child: Container(
-            color: AppColors.darkSurface.withOpacity(0.8),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Expanded(child: _buildNavItem(Icons.inventory_2_outlined, 'Produk', false, () => navigateFade(context, const ProductListScreen()))),
-                Expanded(child: _buildNavItem(Icons.receipt_long_outlined, 'Transaksi', false, () => navigateFade(context, const TransactionListScreen()))),
-                Expanded(child: _buildNavItem(Icons.bar_chart, 'Laporan', true, () {})),
-                Expanded(child: _buildNavItem(Icons.settings_outlined, 'Setting', false, () => navigateFade(context, const SettingsScreen()))),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildNavItem(IconData icon, String label, bool isActive, VoidCallback onTap) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(12),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 11,
-                color: isActive ? AppColors.primary : AppColors.darkMutedForeground,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
       ),
     );
   }

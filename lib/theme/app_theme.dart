@@ -3,14 +3,29 @@ import 'package:flutter/material.dart';
 /// Design Tokens - Color Palette
 class AppColors {
   // Primary & Accent Colors
-  static const Color primary = Color(0xFF6366F0); // #6366F0 - FAB, tab aktif, aksen indigo
+  static const Color primary = Color(0xFF6D4AFF); // #6D4AFF - FAB, tab aktif, aksen ungu
   static const Color accent = Color(0xFF7F8AF5); // #7F8AF5 - indigo terang
-  
+  static const Color softAccentBg = Color(0xFFEFEBFF); // #EFEBFF - soft accent bg
+
   // Semantic Colors
   static const Color success = Color(0xFF34D896); // #34D896 - stok aman / margin positif
   static const Color warning = Color(0xFFF6BD36); // #F6BD36 - badge stok rendah
   static const Color destructive = Color(0xFFF14460); // #F14460 - stok habis / error
-  
+
+  // Category Chips (Light Theme)
+  static const Color chipPrimerText = Color(0xFF2563EB); // #2563EB
+  static const Color chipPrimerBg = Color(0xFFDBEAFE); // #DBEAFE
+  static const Color chipFacialText = Color(0xFFEA6A28); // #EA6A28
+  static const Color chipFacialBg = Color(0xFFFDE6D8); // #FDE6D8
+
+  // Stock Badge (Light Theme)
+  static const Color stockSafeText = Color(0xFF15803D); // #15803D
+  static const Color stockSafeBg = Color(0xFFDCFCE7); // #DCFCE7
+  static const Color stockSafeBorder = Color(0xFF86EFAC); // #86EFAC
+
+  // Notification Badge
+  static const Color notificationBadge = Color(0xFFEF4444); // #EF4444
+
   // Dark Mode Colors
   static const Color darkBackground = Color(0xFF0A0D15); // #0A0D15 - latar layar
   static const Color darkSurface = Color(0xFF161B24); // #161B24 - kartu metrik, produk, nav
@@ -18,14 +33,14 @@ class AppColors {
   static const Color darkBorder = Color(0xFF232935); // #232935 - garis tepi
   static const Color darkForeground = Color(0xFFFAFAFA); // #FAFAFA - teks utama
   static const Color darkMutedForeground = Color(0xFF95A3B6); // #95A3B6 - teks sekunder / label
-  
-  // Light Mode - Neutral Grays (fallback jika dibutuhkan)
-  static const Color lightBackground = Color(0xFFFAFAFA);
-  static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightBorder = Color(0xFFE5E7EB);
-  static const Color lightTextPrimary = Color(0xFF111827);
-  static const Color lightTextSecondary = Color(0xFF6B7280);
-  static const Color lightTextMuted = Color(0xFF9CA3AF);
+
+  // Light Mode Tokens
+  static const Color lightBackground = Color(0xFFF4F5F7); // #F4F5F7 - latar layar
+  static const Color lightSurface = Color(0xFFFFFFFF); // #FFFFFF - kartu / surface
+  static const Color lightBorder = Color(0xFFE5E7EB); // #E5E7EB - garis tepi
+  static const Color lightTextPrimary = Color(0xFF1A2233); // #1A2233 - teks utama
+  static const Color lightTextSecondary = Color(0xFF6B7280); // #6B7280 - teks sekunder
+  static const Color lightTextMuted = Color(0xFF9CA3AF); // #9CA3AF - teks muted
 }
 
 /// Design Tokens - Spacing & Sizing

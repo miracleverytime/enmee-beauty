@@ -94,13 +94,13 @@ class ProductCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFF3B82F6),
+                            color: AppColors.chipPrimerBg,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             product.category.toUpperCase(),
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.chipPrimerText,
                               fontSize: 8,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
@@ -114,13 +114,13 @@ class ProductCard extends StatelessWidget {
                             vertical: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFF59E0B),
+                            color: AppColors.chipFacialBg,
                             borderRadius: BorderRadius.circular(4),
                           ),
                           child: Text(
                             'FACIAL',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: AppColors.chipFacialText,
                               fontSize: 8,
                               fontWeight: FontWeight.bold,
                               letterSpacing: 0.5,
