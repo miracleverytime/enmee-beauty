@@ -8,7 +8,9 @@ import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/search_field.dart';
+import '../widgets/staggered_item.dart';
 import '../utils/haptics.dart';
+import '../utils/formatters.dart';
 import '../main.dart';
 import 'add_transaction_screen.dart';
 
@@ -266,16 +268,16 @@ class TransactionListScreenState extends State<TransactionListScreen> {
             Expanded(
               child: _buildStatCard(
                 label: 'Total Penjualan',
-                value: _formatCurrencyCompact(totalRevenue),
-                suffix: ' JT',
+                value: Formatters.compact(totalRevenue).value,
+                suffix: Formatters.compact(totalRevenue).unit,
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: _buildStatCard(
                 label: 'Total Profit',
-                value: _formatCurrencyCompact(totalProfit),
-                suffix: ' JT',
+                value: Formatters.compact(totalProfit).value,
+                suffix: Formatters.compact(totalProfit).unit,
                 trend: '$marginPercent%',
                 trendColor: const Color(0xFF10B981),
               ),
@@ -288,14 +290,14 @@ class TransactionListScreenState extends State<TransactionListScreen> {
             Expanded(
               child: _buildStatCard(
                 label: 'Jumlah Transaksi',
-                value: _formatNumber(totalTransactions),
+                value: Formatters.number(totalTransactions),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: _buildStatCard(
                 label: 'Item Terjual',
-                value: _formatNumber(totalItems),
+                value: Formatters.number(totalItems),
                 suffix: ' unit',
               ),
             ),
@@ -447,7 +449,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
       color: context.backgroundColor,
       child: RefreshIndicator(
         onRefresh: loadData,
-        child: ListView.separated(
+        child: StaggeredListView(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           itemCount: _filteredTransactions.length,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -547,7 +549,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
                     ),
                     const SizedBox(height: 6),
                     Text(
-                      _formatDate(transaction.date),
+                      Formatters.dateShort(transaction.date),
                       style: TextStyle(
                         color: context.textMuted,
                         fontSize: 10,
@@ -556,7 +558,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Rp ${_formatCurrency(transaction.totalPrice)}',
+                      Formatters.currencyRp(transaction.totalPrice),
                       style: TextStyle(
                         color: context.textPrimary,
                         fontSize: 16,
@@ -625,7 +627,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
                   ),
                   const SizedBox(height: 3),
                   Text(
-                    '+Rp ${_formatCurrency(profit)}',
+                    '+${Formatters.currencyRp(profit)}',
                     style: TextStyle(
                       color: context.successColor,
                       fontSize: 13,
@@ -658,67 +660,6 @@ class TransactionListScreenState extends State<TransactionListScreen> {
               loadData();
             },
     );
-  }
-
-  String _formatNumber(int number) {
-    return number.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
-
-  String _formatCurrency(double amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
-
-  String _formatCurrencyCompact(double amount) {
-    if (amount >= 1000000000) {
-      return (amount / 1000000000).toStringAsFixed(1);
-    } else if (amount >= 1000000) {
-      return (amount / 1000000).toStringAsFixed(1);
-    } else if (amount >= 1000) {
-      return (amount / 1000).toStringAsFixed(0);
-    }
-    return amount.toStringAsFixed(0);
-  }
-
-  String _formatDate(String dateStr) {
-    try {
-      final date = DateTime.parse(dateStr);
-      final now = DateTime.now();
-
-      if (date.year == now.year &&
-          date.month == now.month &&
-          date.day == now.day) {
-        final hour = date.hour.toString().padLeft(2, '0');
-        final minute = date.minute.toString().padLeft(2, '0');
-        return 'Hari ini · $hour.$minute';
-      }
-
-      const months = [
-        'Jan',
-        'Feb',
-        'Mar',
-        'Apr',
-        'Mei',
-        'Jun',
-        'Jul',
-        'Agu',
-        'Sep',
-        'Okt',
-        'Nov',
-        'Des'
-      ];
-      final day = date.day.toString().padLeft(2, '0');
-      final hour = date.hour.toString().padLeft(2, '0');
-      final minute = date.minute.toString().padLeft(2, '0');
-      return '$day ${months[date.month - 1]} · $hour.$minute';
-    } catch (_) {
-      return dateStr;
-    }
   }
 }
 

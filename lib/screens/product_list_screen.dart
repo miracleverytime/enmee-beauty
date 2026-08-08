@@ -10,7 +10,9 @@ import '../widgets/page_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/search_field.dart';
 import '../widgets/sort_indicator.dart';
+import '../widgets/staggered_item.dart';
 import '../utils/haptics.dart';
+import '../utils/formatters.dart';
 import '../main.dart';
 import 'add_product_screen.dart';
 
@@ -253,7 +255,7 @@ class ProductListScreenState extends State<ProductListScreen> {
             Expanded(
               child: _buildStatCard(
                 label: 'Total Produk',
-                value: _formatNumber(totalProducts),
+                value: Formatters.number(totalProducts),
                 trend: '+2%',
                 trendColor: const Color(0xFF10B981),
               ),
@@ -262,8 +264,8 @@ class ProductListScreenState extends State<ProductListScreen> {
             Expanded(
               child: _buildStatCard(
                 label: 'Nilai Stok',
-                value: _formatCurrencyCompact(totalStockValue),
-                suffix: ' JT',
+                value: Formatters.compact(totalStockValue).value,
+                suffix: Formatters.compact(totalStockValue).unit,
               ),
             ),
           ],
@@ -606,7 +608,7 @@ class ProductListScreenState extends State<ProductListScreen> {
       color: context.backgroundColor,
       child: RefreshIndicator(
         onRefresh: loadData,
-        child: ListView.separated(
+        child: StaggeredListView(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           itemCount: _filteredProducts.length,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -629,24 +631,6 @@ class ProductListScreenState extends State<ProductListScreen> {
         ),
       ),
     );
-  }
-
-  String _formatNumber(int number) {
-    return number.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
-
-  String _formatCurrencyCompact(double amount) {
-    if (amount >= 1000000000) {
-      return (amount / 1000000000).toStringAsFixed(1);
-    } else if (amount >= 1000000) {
-      return (amount / 1000000).toStringAsFixed(1);
-    } else if (amount >= 1000) {
-      return (amount / 1000).toStringAsFixed(0);
-    }
-    return amount.toStringAsFixed(0);
   }
 
   Widget _buildEmptyState() {
@@ -682,23 +666,5 @@ class ProductListScreenState extends State<ProductListScreen> {
   int _calculateMarginPercentage(Product product) {
     if (product.buyPrice == 0) return 0;
     return (((product.sellPrice - product.buyPrice) / product.buyPrice) * 100).round();
-  }
-
-  String _formatCurrency(double amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
-
-  String _formatCurrencyShort(double amount) {
-    if (amount >= 1000000000) {
-      return 'Rp ${(amount / 1000000000).toStringAsFixed(1)}M';
-    } else if (amount >= 1000000) {
-      return 'Rp ${(amount / 1000000).toStringAsFixed(1)}jt';
-    } else if (amount >= 1000) {
-      return 'Rp ${(amount / 1000).toStringAsFixed(0)}rb';
-    }
-    return 'Rp ${_formatCurrency(amount)}';
   }
 }

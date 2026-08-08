@@ -28,9 +28,9 @@ Diurut dari impact tertinggi ke terendah. Centang item yang sudah selesai.
 
 - [ ] **#11 Page transition consistency** — `navigateTo` di `page_transitions.dart` udah ada. Cek apakah dipakai konsisten di semua push (add product, add transaction).
 - [ ] **#12 Long press hint consistency** — `transaction_list_screen.dart:676` punya long-press-to-delete. `product_list` punya explicit delete button. Cek konsistensi UX.
-- [ ] **#13 Currency formatter terpusat** — Format "Rp 1.000", "Rp 1.000.000" (titik), "1.5 jt" tidak konsisten. Bikin helper `CurrencyFormatter.format()`.
-- [ ] **#14 Date format consistency** — `transaction_list_screen.dart:907` punya custom formatter, mungkin bisa dipakai juga di laporan & tempat lain.
-- [ ] **#15 Stagger animation untuk list items** — Saat data pertama load, list item di-stagger fade-in biar terasa smooth.
+- [x] **#13 Formatter terpusat** — `lib/utils/formatters.dart`: `Formatters.number()`, `currency()`, `currencyRp()`, `compact()` (return `CompactNumber` value+unit), & `dateShort()`. Refactor 5 file (product_list, transaction_list, report, add_transaction, product_card) — semua method duplikat `_formatCurrency`/`_formatCurrencyCompact`/`_formatNumber`/`_formatCurrencyShort`/`_formatDate` dihapus. Format konsisten: "Rp 1.500.000", "1,2 JT", "1.234".
+- [x] **#14 Date formatter** — `_formatDate` di transaction_list diganti jadi `Formatters.dateShort()` (sama: "Hari ini · HH.mm" / "DD MMM · HH.mm").
+- [x] **#15 Stagger animation untuk list items** — `lib/widgets/staggered_item.dart`: `StaggeredListView` (API mirip `ListView.separated` + `RefreshIndicator`-friendly). Saat pertama paint, 8 item pertama muncul berurutan (fade + slide-up 6%, delay 50ms, durasi 320ms). Item ke-9+ langsung muncul tanpa animasi. Dipakai di product, transaction, report list.
 - [ ] **#16 Hapus shadow di dark mode** — FAB shadow di `main_shell.dart:107` + header card shadow di `page_header.dart`. Di dark mode shadow kurang guna, bisa di-skip atau dikurangi.
 
 ---

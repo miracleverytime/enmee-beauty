@@ -3,6 +3,7 @@ import '../database/database_helper.dart';
 import '../models/product.dart';
 import '../models/transaction.dart' as model;
 import '../theme/app_theme.dart';
+import '../utils/formatters.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -156,7 +157,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                 const SizedBox(height: 16),
                                 _buildDetailRow('Produk', _selectedProduct?.name ?? '', true),
                                 const SizedBox(height: 12),
-                                _buildDetailRow('Harga satuan', _selectedProduct != null ? 'Rp ${_formatCurrency(_selectedProduct!.sellPrice)}' : '', false),
+                                _buildDetailRow('Harga satuan', _selectedProduct != null ? Formatters.currencyRp(_selectedProduct!.sellPrice) : '', false),
                                 const SizedBox(height: 12),
                                 _buildDetailRow('Jumlah', _quantityController.text, false, isQuantity: true),
                                 if (_selectedProduct != null) ...[
@@ -199,7 +200,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                     ),
                                   ),
                                   Text(
-                                    'Rp ${_formatCurrency(totalPrice)}',
+                                    Formatters.currencyRp(totalPrice),
                                     style: TextStyle(
                                       fontSize: 20,
                                       fontWeight: FontWeight.bold,
@@ -220,7 +221,7 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
                                     ),
                                   ),
                                   Text(
-                                    'Rp ${_formatCurrency(profit)}',
+                                    '+${Formatters.currencyRp(profit)}',
                                     style: TextStyle(
                                       fontSize: 14,
                                       fontWeight: FontWeight.w600,
@@ -386,13 +387,6 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
             ),
         ],
       ),
-    );
-  }
-
-  String _formatCurrency(double amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
     );
   }
 }

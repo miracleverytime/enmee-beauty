@@ -6,7 +6,9 @@ import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/search_field.dart';
+import '../widgets/staggered_item.dart';
 import '../utils/haptics.dart';
+import '../utils/formatters.dart';
 import '../main.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -239,8 +241,8 @@ class _ReportScreenState extends State<ReportScreen> {
             Expanded(
               child: _buildStatCard(
                 label: 'Total Pendapatan',
-                value: _formatCurrencyCompact(totalRevenue),
-                suffix: ' JT',
+                value: Formatters.compact(totalRevenue).value,
+                suffix: Formatters.compact(totalRevenue).unit,
                 trend: '$marginPercent%',
                 trendColor: const Color(0xFF10B981),
               ),
@@ -249,8 +251,8 @@ class _ReportScreenState extends State<ReportScreen> {
             Expanded(
               child: _buildStatCard(
                 label: 'Total Profit',
-                value: _formatCurrencyCompact(totalProfit),
-                suffix: ' JT',
+                value: Formatters.compact(totalProfit).value,
+                suffix: Formatters.compact(totalProfit).unit,
               ),
             ),
           ],
@@ -261,14 +263,14 @@ class _ReportScreenState extends State<ReportScreen> {
             Expanded(
               child: _buildStatCard(
                 label: 'Transaksi',
-                value: _formatNumber(totalTransactions),
+                value: Formatters.number(totalTransactions),
               ),
             ),
             const SizedBox(width: 10),
             Expanded(
               child: _buildStatCard(
                 label: 'Item Terjual',
-                value: _formatNumber(totalItems),
+                value: Formatters.number(totalItems),
                 suffix: ' unit',
               ),
             ),
@@ -432,7 +434,7 @@ class _ReportScreenState extends State<ReportScreen> {
       color: context.backgroundColor,
       child: RefreshIndicator(
         onRefresh: _loadData,
-        child: ListView.separated(
+        child: StaggeredListView(
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           itemCount: _filteredByProduct.length,
           separatorBuilder: (_, __) => const SizedBox(height: 10),
@@ -537,7 +539,7 @@ class _ReportScreenState extends State<ReportScreen> {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      'Rp ${_formatCurrency(revenue)}',
+                      Formatters.currencyRp(revenue),
                       style: TextStyle(
                         color: context.textPrimary,
                         fontSize: 16,
@@ -626,31 +628,6 @@ class _ReportScreenState extends State<ReportScreen> {
           ? 'Coba ubah kata kunci pencarian'
           : 'Mulai catat transaksi untuk melihat produk terlaris di sini',
     );
-  }
-
-  String _formatNumber(int number) {
-    return number.toString().replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
-
-  String _formatCurrency(double amount) {
-    return amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    );
-  }
-
-  String _formatCurrencyCompact(double amount) {
-    if (amount >= 1000000000) {
-      return (amount / 1000000000).toStringAsFixed(1);
-    } else if (amount >= 1000000) {
-      return (amount / 1000000).toStringAsFixed(1);
-    } else if (amount >= 1000) {
-      return (amount / 1000).toStringAsFixed(0);
-    }
-    return amount.toStringAsFixed(0);
   }
 }
 

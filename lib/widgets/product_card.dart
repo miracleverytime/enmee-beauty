@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/product.dart';
+import '../utils/formatters.dart';
 
 /// Constants
 const int kLowStockThreshold = 5;
@@ -147,7 +148,7 @@ class ProductCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 2),
                     Text(
-                      _formatCurrency(product.sellPrice),
+                      Formatters.currencyRp(product.sellPrice),
                       style: TextStyle(
                         color: context.textPrimary,
                         fontSize: 16,
@@ -375,12 +376,5 @@ class ProductCard extends StatelessWidget {
   int _calculateMarginPercentage() {
     if (product.buyPrice == 0) return 0;
     return (((product.sellPrice - product.buyPrice) / product.buyPrice) * 100).round();
-  }
-
-  String _formatCurrency(double amount) {
-    return 'Rp ${amount.toStringAsFixed(0).replaceAllMapped(
-      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-      (Match m) => '${m[1]}.',
-    )}';
   }
 }
