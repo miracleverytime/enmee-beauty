@@ -51,24 +51,35 @@ class SkincareApp extends StatefulWidget {
 }
 
 class _SkincareAppState extends State<SkincareApp> {
-  late ThemeMode _themeMode;
+  late final ValueNotifier<ThemeMode> _themeMode;
   late bool _isStatsExpanded;
 
   @override
   void initState() {
     super.initState();
-    _themeMode = widget.isDarkMode ? ThemeMode.dark : ThemeMode.light;
+    _themeMode = ValueNotifier<ThemeMode>(
+      widget.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+    );
     _isStatsExpanded = widget.initialStatsExpanded;
   }
 
+  @override
+  void dispose() {
+    _themeMode.dispose();
+    super.dispose();
+  }
+
   Future<void> toggleTheme() async {
-    setState(() {
-      _themeMode = _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
-    });
+    final next = _themeMode.value == ThemeMode.light
+        ? ThemeMode.dark
+        : ThemeMode.light;
+
+    // Set theme mode tanpa animasi transisi.
+    _themeMode.value = next;
 
     // Save theme preference
     final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool('isDarkMode', _themeMode == ThemeMode.dark);
+    await prefs.setBool('isDarkMode', next == ThemeMode.dark);
   }
 
   Future<void> setStatsExpanded(bool value) async {
@@ -82,32 +93,37 @@ class _SkincareAppState extends State<SkincareApp> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Skincare Stock',
-      debugShowCheckedModeBanner: false,
-      theme: lightTheme(),
-      darkTheme: darkTheme(),
-      themeMode: _themeMode,
-      initialRoute: '/',
-      routes: {
-        '/': (context) => MainShell(
-              initialIndex: 0,
-              statsInitiallyExpanded: _isStatsExpanded,
-            ),
-        '/transactions': (context) => MainShell(
-              initialIndex: 1,
-              statsInitiallyExpanded: _isStatsExpanded,
-            ),
-        '/report': (context) => MainShell(
-              initialIndex: 2,
-              statsInitiallyExpanded: _isStatsExpanded,
-            ),
-        '/settings': (context) => MainShell(
-              initialIndex: 3,
-              statsInitiallyExpanded: _isStatsExpanded,
-            ),
-        '/add-product': (context) => const AddProductScreen(),
-        '/add-transaction': (context) => const AddTransactionScreen(),
+    return ValueListenableBuilder<ThemeMode>(
+      valueListenable: _themeMode,
+      builder: (context, mode, _) {
+        return MaterialApp(
+          title: 'Skincare Stock',
+          debugShowCheckedModeBanner: false,
+          theme: lightTheme(),
+          darkTheme: darkTheme(),
+          themeMode: mode,
+          initialRoute: '/',
+          routes: {
+            '/': (context) => MainShell(
+                  initialIndex: 0,
+                  statsInitiallyExpanded: _isStatsExpanded,
+                ),
+            '/transactions': (context) => MainShell(
+                  initialIndex: 1,
+                  statsInitiallyExpanded: _isStatsExpanded,
+                ),
+            '/report': (context) => MainShell(
+                  initialIndex: 2,
+                  statsInitiallyExpanded: _isStatsExpanded,
+                ),
+            '/settings': (context) => MainShell(
+                  initialIndex: 3,
+                  statsInitiallyExpanded: _isStatsExpanded,
+                ),
+            '/add-product': (context) => const AddProductScreen(),
+            '/add-transaction': (context) => const AddTransactionScreen(),
+          },
+        );
       },
     );
   }

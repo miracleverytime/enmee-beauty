@@ -272,10 +272,26 @@ class ProductListScreenState extends State<ProductListScreen> {
                       onPressed: () {
                         SkincareApp.of(context)?.toggleTheme();
                       },
-                      icon: Icon(
-                        context.isDark ? Icons.wb_sunny_outlined : Icons.nights_stay_outlined,
-                        color: context.textSecondary,
-                        size: 18,
+                      icon: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 350),
+                        transitionBuilder: (child, animation) {
+                          return RotationTransition(
+                            turns: Tween<double>(begin: 0.85, end: 1.0)
+                                .animate(animation),
+                            child: FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            ),
+                          );
+                        },
+                        child: Icon(
+                          context.isDark
+                              ? Icons.wb_sunny_outlined
+                              : Icons.nights_stay_outlined,
+                          key: ValueKey<bool>(context.isDark),
+                          color: context.textSecondary,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ),
@@ -384,15 +400,10 @@ class ProductListScreenState extends State<ProductListScreen> {
                   ),
                 ),
                 child: Center(
-                  child: AnimatedRotation(
-                    turns: _isStatsExpanded ? 0.5 : 0.0,
-                    duration: const Duration(milliseconds: 300),
-                    curve: Curves.easeInOut,
-                    child: Icon(
-                      Icons.keyboard_arrow_down,
-                      color: context.textMuted.withOpacity(0.5),
-                      size: 14,
-                    ),
+                  child: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: context.textMuted.withOpacity(0.5),
+                    size: 14,
                   ),
                 ),
               ),

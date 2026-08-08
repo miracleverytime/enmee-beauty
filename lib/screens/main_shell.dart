@@ -68,17 +68,20 @@ class _MainShellState extends State<MainShell> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: context.backgroundColor,
-      body: IndexedStack(
-        index: _currentIndex,
-        children: [
-          ProductListScreen(
-            key: _productsKey,
-            initialStatsExpanded: widget.statsInitiallyExpanded,
-          ),
-          TransactionListScreen(key: _transactionsKey),
-          const ReportScreen(),
-          const SettingsScreen(),
-        ],
+      body: Container(
+        color: context.backgroundColor,
+        child: IndexedStack(
+          index: _currentIndex,
+          children: [
+            ProductListScreen(
+              key: _productsKey,
+              initialStatsExpanded: widget.statsInitiallyExpanded,
+            ),
+            TransactionListScreen(key: _transactionsKey),
+            const ReportScreen(),
+            const SettingsScreen(),
+          ],
+        ),
       ),
       floatingActionButton: AnimatedScale(
         scale: _showFab ? 1.0 : 0.0,
