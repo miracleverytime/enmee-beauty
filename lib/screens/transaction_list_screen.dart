@@ -6,6 +6,8 @@ import '../utils/page_transitions.dart';
 import '../widgets/skeleton_loader.dart';
 import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/search_field.dart';
 import '../main.dart';
 import 'add_transaction_screen.dart';
 
@@ -29,6 +31,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
   String _searchQuery = '';
   String _selectedType = 'Semua';
   final List<String> _types = ['Semua', 'Hari Ini', 'Minggu Ini', 'Bulan Ini'];
+  final TextEditingController _searchController = TextEditingController();
   final GlobalKey<CollapsibleStatsState> _statsKey = GlobalKey<CollapsibleStatsState>();
   bool _isStatsExpanded = false;
 
@@ -151,6 +154,12 @@ class TransactionListScreenState extends State<TransactionListScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -374,43 +383,13 @@ class TransactionListScreenState extends State<TransactionListScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: context.borderColor.withOpacity(0.5),
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-                _applyFilters();
-              },
-              style: TextStyle(
-                color: context.textPrimary,
-                fontSize: 14,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Cari nama produk...',
-                hintStyle: TextStyle(
-                  color: context.textMuted,
-                  fontSize: 14,
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: context.textMuted,
-                  size: 20,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-            ),
+          SearchField(
+            controller: _searchController,
+            hintText: 'Cari nama produk...',
+            onChanged: (value) {
+              setState(() => _searchQuery = value);
+              _applyFilters();
+            },
           ),
           const SizedBox(height: 10),
           Container(
@@ -659,38 +638,21 @@ class TransactionListScreenState extends State<TransactionListScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.receipt_long_outlined,
-            size: 80,
-            color: context.textMuted,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            _searchQuery.isNotEmpty || _selectedType != 'Semua'
-                ? 'Tidak ada transaksi ditemukan'
-                : 'Belum ada transaksi',
-            style: TextStyle(
-              color: context.textSecondary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            _searchQuery.isNotEmpty || _selectedType != 'Semua'
-                ? 'Coba ubah filter atau pencarian'
-                : 'Tap tombol + untuk menambah transaksi',
-            style: TextStyle(
-              color: context.textMuted,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ),
+    final hasFilter = _searchQuery.isNotEmpty || _selectedType != 'Semua';
+    return EmptyState(
+      icon: Icons.receipt_long_outlined,
+      title: hasFilter ? 'Tidak ada transaksi ditemukan' : 'Belum ada transaksi',
+      message: hasFilter
+          ? 'Coba ubah filter atau kata kunci pencarian'
+          : 'Catat transaksi pertamamu untuk mulai pantau penjualan',
+      actionLabel: hasFilter ? null : 'Tambah Transaksi',
+      actionIcon: Icons.add,
+      onAction: hasFilter
+          ? null
+          : () async {
+              await navigateTo(context, const AddTransactionScreen());
+              loadData();
+            },
     );
   }
 

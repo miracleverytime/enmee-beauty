@@ -4,6 +4,8 @@ import '../theme/app_theme.dart';
 import '../widgets/skeleton_loader.dart';
 import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/search_field.dart';
 import '../main.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -40,6 +42,7 @@ class _ReportScreenState extends State<ReportScreen> {
   bool _isLoading = true;
   ReportPeriod _selectedPeriod = ReportPeriod.bulanIni;
   String _searchQuery = '';
+  final TextEditingController _searchController = TextEditingController();
   final GlobalKey<CollapsibleStatsState> _statsKey = GlobalKey<CollapsibleStatsState>();
   bool _isStatsExpanded = false;
 
@@ -129,6 +132,12 @@ class _ReportScreenState extends State<ReportScreen> {
       start: start.toIso8601String(),
       end: end.toIso8601String(),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -349,43 +358,13 @@ class _ReportScreenState extends State<ReportScreen> {
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Column(
         children: [
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: context.borderColor.withOpacity(0.5),
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-                _applyFilters();
-              },
-              style: TextStyle(
-                color: context.textPrimary,
-                fontSize: 14,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Cari produk terlaris...',
-                hintStyle: TextStyle(
-                  color: context.textMuted,
-                  fontSize: 14,
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: context.textMuted,
-                  size: 20,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-            ),
+          SearchField(
+            controller: _searchController,
+            hintText: 'Cari produk terlaris...',
+            onChanged: (value) {
+              setState(() => _searchQuery = value);
+              _applyFilters();
+            },
           ),
           const SizedBox(height: 10),
           _buildPeriodSelector(),
@@ -636,38 +615,13 @@ class _ReportScreenState extends State<ReportScreen> {
   }
 
   Widget _buildEmptyProductSection() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.bar_chart_outlined,
-            size: 80,
-            color: context.textMuted,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            _searchQuery.isNotEmpty
-                ? 'Tidak ada produk ditemukan'
-                : 'Belum ada data produk',
-            style: TextStyle(
-              color: context.textSecondary,
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            _searchQuery.isNotEmpty
-                ? 'Coba ubah kata kunci pencarian'
-                : 'Data produk terlaris akan muncul di sini',
-            style: TextStyle(
-              color: context.textMuted,
-              fontSize: 13,
-            ),
-          ),
-        ],
-      ),
+    final hasFilter = _searchQuery.isNotEmpty;
+    return EmptyState(
+      icon: Icons.bar_chart_outlined,
+      title: hasFilter ? 'Tidak ada produk ditemukan' : 'Belum ada data produk',
+      message: hasFilter
+          ? 'Coba ubah kata kunci pencarian'
+          : 'Mulai catat transaksi untuk melihat produk terlaris di sini',
     );
   }
 

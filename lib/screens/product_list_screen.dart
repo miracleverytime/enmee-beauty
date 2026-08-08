@@ -7,6 +7,8 @@ import '../widgets/product_card.dart';
 import '../widgets/skeleton_loader.dart';
 import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
+import '../widgets/empty_state.dart';
+import '../widgets/search_field.dart';
 import '../main.dart';
 import 'add_product_screen.dart';
 
@@ -34,6 +36,7 @@ class ProductListScreenState extends State<ProductListScreen> {
   List<String> _categories = ['Semua'];
   bool _showLowStockOnly = false;
   SortOption _sortOption = SortOption.nameAsc;
+  final TextEditingController _searchController = TextEditingController();
   final GlobalKey<CollapsibleStatsState> _statsKey = GlobalKey<CollapsibleStatsState>();
   bool _isStatsExpanded = false;
 
@@ -151,6 +154,12 @@ class ProductListScreenState extends State<ProductListScreen> {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
   @override
@@ -379,43 +388,13 @@ class ProductListScreenState extends State<ProductListScreen> {
       child: Column(
         children: [
           // Search bar
-          Container(
-            height: 44,
-            decoration: BoxDecoration(
-              color: context.surfaceColor,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(
-                color: context.borderColor.withOpacity(0.5),
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              onChanged: (value) {
-                setState(() => _searchQuery = value);
-                _applyFilters();
-              },
-              style: TextStyle(
-                color: context.textPrimary,
-                fontSize: 14,
-              ),
-              decoration: InputDecoration(
-                hintText: 'Cari produk atau SKU...',
-                hintStyle: TextStyle(
-                  color: context.textMuted,
-                  fontSize: 14,
-                ),
-                prefixIcon: Icon(
-                  Icons.search,
-                  color: context.textMuted,
-                  size: 20,
-                ),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-              ),
-            ),
+          SearchField(
+            controller: _searchController,
+            hintText: 'Cari produk atau SKU...',
+            onChanged: (value) {
+              setState(() => _searchQuery = value);
+              _applyFilters();
+            },
           ),
           const SizedBox(height: 10),
           // Filters row
@@ -631,57 +610,22 @@ class ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.inventory_2_outlined,
-            size: 80,
-            color: context.textMuted,
-          ),
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            _searchQuery.isNotEmpty || _selectedCategory != 'Semua' || _showLowStockOnly
-                ? 'Tidak ada produk ditemukan'
-                : 'Belum ada produk',
-            style: AppTextStyles.headingLarge.copyWith(
-              color: context.textSecondary,
-            ),
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(
-            _searchQuery.isNotEmpty || _selectedCategory != 'Semua' || _showLowStockOnly
-                ? 'Coba ubah filter atau pencarian'
-                : 'Tap tombol + untuk menambah produk',
-            style: AppTextStyles.bodyMedium.copyWith(
-              color: context.textMuted,
-            ),
-          ),
-          if (_searchQuery.isEmpty && _selectedCategory == 'Semua' && !_showLowStockOnly) ...[
-            const SizedBox(height: AppSpacing.xl),
-            ElevatedButton.icon(
-              onPressed: () async {
-                await navigateTo(context, const AddProductScreen());
-                loadData();
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Tambah Produk Pertama'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primary,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xl,
-                  vertical: AppSpacing.md,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(AppRadius.sm),
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
+    final hasFilter =
+        _searchQuery.isNotEmpty || _selectedCategory != 'Semua' || _showLowStockOnly;
+    return EmptyState(
+      icon: Icons.inventory_2_outlined,
+      title: hasFilter ? 'Tidak ada produk ditemukan' : 'Belum ada produk',
+      message: hasFilter
+          ? 'Coba ubah filter atau kata kunci pencarian'
+          : 'Tambah produk pertamamu untuk mulai kelola stok',
+      actionLabel: hasFilter ? null : 'Tambah Produk',
+      actionIcon: Icons.add,
+      onAction: hasFilter
+          ? null
+          : () async {
+              await navigateTo(context, const AddProductScreen());
+              loadData();
+            },
     );
   }
 

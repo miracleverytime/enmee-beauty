@@ -73,18 +73,30 @@ class _MainShellState extends State<MainShell> {
         child: IndexedStack(
           index: _currentIndex,
           children: [
-            ProductListScreen(
-              key: _productsKey,
-              initialStatsExpanded: widget.statsInitiallyExpanded,
+            _AnimatedTab(
+              isActive: _currentIndex == 0,
+              child: ProductListScreen(
+                key: _productsKey,
+                initialStatsExpanded: widget.statsInitiallyExpanded,
+              ),
             ),
-            TransactionListScreen(
-              key: _transactionsKey,
-              initialStatsExpanded: widget.statsInitiallyExpanded,
+            _AnimatedTab(
+              isActive: _currentIndex == 1,
+              child: TransactionListScreen(
+                key: _transactionsKey,
+                initialStatsExpanded: widget.statsInitiallyExpanded,
+              ),
             ),
-            ReportScreen(
-              initialStatsExpanded: widget.statsInitiallyExpanded,
+            _AnimatedTab(
+              isActive: _currentIndex == 2,
+              child: ReportScreen(
+                initialStatsExpanded: widget.statsInitiallyExpanded,
+              ),
             ),
-            const SettingsScreen(),
+            const _AnimatedTab(
+              isActive: true,
+              child: SettingsScreen(),
+            ),
           ],
         ),
       ),
@@ -130,6 +142,66 @@ class _MainShellState extends State<MainShell> {
         onTap: _onTabChanged,
         showFab: _showFab,
       ),
+    );
+  }
+}
+
+/// Animated wrapper untuk konten tab. Fade + slide in saat tab pertama kali
+/// diaktifkan; setelah aktif tetap pasif agar interaksi user (scroll, search)
+/// tidak terganggu oleh animasi ulang.
+class _AnimatedTab extends StatefulWidget {
+  final bool isActive;
+  final Widget child;
+
+  const _AnimatedTab({
+    required this.isActive,
+    required this.child,
+  });
+
+  @override
+  State<_AnimatedTab> createState() => _AnimatedTabState();
+}
+
+class _AnimatedTabState extends State<_AnimatedTab>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fade;
+  late final Animation<Offset> _slide;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 280),
+      value: widget.isActive ? 1.0 : 0.0,
+    );
+    _fade = CurvedAnimation(parent: _controller, curve: Curves.easeOutCubic);
+    _slide = Tween<Offset>(
+      begin: const Offset(0, 0.04),
+      end: Offset.zero,
+    ).animate(_fade);
+  }
+
+  @override
+  void didUpdateWidget(covariant _AnimatedTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _controller.forward(from: 0.0);
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FadeTransition(
+      opacity: _fade,
+      child: SlideTransition(position: _slide, child: widget.child),
     );
   }
 }

@@ -7,13 +7,10 @@ Diurut dari impact tertinggi ke terendah. Centang item yang sudah selesai.
 
 ## High Impact
 
-- [ ] **#1 Animated content switching di tab** — Sekarang `IndexedStack` di `main_shell.dart:73` keep state tapi switch terasa abrupt. Tambahin animated transition (fade + slight slide) saat pindah tab.
-- [ ] **#2 Empty state yang actionable** — Beberapa empty state masih generic. Tambahin saran kontekstual + CTA:
-  - Produk: "Tambah produk pertamamu" + tombol
-  - Laporan: "Mulai catat transaksi untuk lihat laporan"
-  - Transaksi: "Tap + untuk tambah transaksi"
-- [ ] **#3 Pull-to-refresh yang konsisten** — `product_list` & `transaction_list` punya `RefreshIndicator`. Cek `report_screen.dart:637` (ada), `settings_screen` (gak perlu).
-- [ ] **#4 Search dengan clear button** — TextField di `product_list_screen.dart:580` & `transaction_list_screen.dart:572` belum punya tombol clear (X) saat ada query.
+- [x] **#1 Animated content switching di tab** — Wrapper `_AnimatedTab` di `main_shell.dart` (fade + slide up 4% saat tab diaktifkan). State tiap tab tetap terjaga via `IndexedStack`.
+- [x] **#2 Empty state yang actionable** — Widget `EmptyState` reusable di `lib/widgets/empty_state.dart`. Product & transaction punya CTA "Tambah Produk/Transaksi"; report pakai empty state informatif. Semua pakai icon dalam circle ber-border biar lebih polished.
+- [x] **#3 Pull-to-refresh yang konsisten** — Audit selesai: product, transaction, report sudah punya `RefreshIndicator`. Settings gak perlu (statis).
+- [x] **#4 Search dengan clear button** — Widget `SearchField` reusable di `lib/widgets/search_field.dart` dengan suffix icon X reaktif (muncul saat ada query, hilang saat kosong). Dipakai di product, transaction, dan report screen. Dispose controller ditambahkan di 3 screen.
 
 ---
 
