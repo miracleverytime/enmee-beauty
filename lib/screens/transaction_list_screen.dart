@@ -8,6 +8,7 @@ import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/search_field.dart';
+import '../utils/haptics.dart';
 import '../main.dart';
 import 'add_transaction_screen.dart';
 
@@ -36,6 +37,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
   bool _isStatsExpanded = false;
 
   void _toggleStats() {
+    Haptics.medium();
     final nextValue = !_isStatsExpanded;
     setState(() {
       _isStatsExpanded = nextValue;
@@ -108,6 +110,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
   }
 
   Future<void> _deleteTransaction(model.Transaction transaction) async {
+    Haptics.medium();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -130,6 +133,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
           ),
           TextButton(
             onPressed: () async {
+              Haptics.heavy();
               Navigator.pop(ctx);
               await _db.deleteTransaction(transaction.id!);
               final product = await _db.getProductById(transaction.productId);

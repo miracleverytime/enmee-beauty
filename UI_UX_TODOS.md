@@ -18,14 +18,9 @@ Diurut dari impact tertinggi ke terendah. Centang item yang sudah selesai.
 
 - [x] **#5 Skeleton loader di settings** — `SettingItemSkeleton` & `SectionHeaderSkeleton` ditambahin di `skeleton_loader.dart`. Settings screen punya 220ms loading state + `AnimatedSwitcher` fade ke konten (konsisten dengan loading state di tab lain).
 - [x] **#6 Indikator sort/filter aktif** — Widget `SortIndicator` di `lib/widgets/sort_indicator.dart` (chip pill dengan icon swap_vert + label + tombol X). Tampil di product toolbar via `AnimatedSize` cuma saat sort bukan default (Nama A-Z). Tap body buka sort sheet, tap X reset ke default.
-- [ ] **#7 Haptic feedback** di:
-  - Toggle theme (settings)
-  - Toggle stats collapse
-  - FAB press
-  - Tab switch
-- [ ] **#8 Haptic on destructive actions** — Long press delete transaksi, hapus produk, hapus semua data. Sekarang cuma snackbar, gak ada feedback tactile.
-- [ ] **#9 Empty state illustration** — Icon generic (`inventory_2_outlined`, `receipt_long_outlined`, `bar_chart_outlined`). Bisa pakai custom illustration/Lottie atau gradient background biar lebih menarik.
-- [ ] **#10 Tab label visible di bottom nav** — `app_bottom_nav_bar.dart`. Cek apakah label selalu visible atau hanya saat aktif. Material 3 modern biasanya label selalu visible dengan animated pill untuk yang aktif.
+- [x] **#7 Haptic feedback** — Wrapper `Haptics` di `lib/utils/haptics.dart` (selection/light/medium/heavy/error). Dipakai di: theme toggle (light), stats collapse × 3 screen (medium), FAB (medium), tab switch (selection), search clear (selection via SearchField), sort change & sort clear (selection), period selector report (selection).
+- [x] **#8 Haptic on destructive actions** — Delete produk (medium buka dialog + heavy confirm), delete transaksi long-press (medium buka dialog + heavy confirm).
+- [x] **#10 Tab label visible di bottom nav** — `app_bottom_nav_bar.dart`: icon-only (label dihapus), plus background pill (`AnimatedContainer` 320ms, primary 12% opacity) yang muncul di item aktif. `AppNavItem.label` field juga dihapus.
 
 ---
 

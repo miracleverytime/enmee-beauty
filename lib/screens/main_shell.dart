@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/app_bottom_nav_bar.dart';
 import '../utils/page_transitions.dart';
+import '../utils/haptics.dart';
 import 'product_list_screen.dart';
 import 'transaction_list_screen.dart';
 import 'report_screen.dart';
@@ -44,10 +45,12 @@ class _MainShellState extends State<MainShell> {
 
   void _onTabChanged(int index) {
     if (index == _currentIndex) return;
+    Haptics.selection();
     setState(() => _currentIndex = index);
   }
 
   Future<void> _onFabPressed() async {
+    Haptics.medium();
     switch (_currentIndex) {
       case 0:
         await navigateTo(context, const AddProductScreen());

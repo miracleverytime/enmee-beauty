@@ -5,8 +5,7 @@ import '../theme/app_theme.dart';
 /// Item descriptor untuk bottom nav.
 class AppNavItem {
   final IconData icon;
-  final String label;
-  const AppNavItem({required this.icon, required this.label});
+  const AppNavItem({required this.icon});
 }
 
 /// Bottom navigation bar bersama untuk 4 tab utama.
@@ -17,10 +16,10 @@ class AppNavItem {
 /// ketika FAB menghilang.
 class AppBottomNavBar extends StatelessWidget {
   static const List<AppNavItem> items = [
-    AppNavItem(icon: Icons.inventory_2_outlined, label: 'Produk'),
-    AppNavItem(icon: Icons.receipt_long_outlined, label: 'Transaksi'),
-    AppNavItem(icon: Icons.bar_chart_outlined, label: 'Laporan'),
-    AppNavItem(icon: Icons.settings_outlined, label: 'Setting'),
+    AppNavItem(icon: Icons.inventory_2_outlined),
+    AppNavItem(icon: Icons.receipt_long_outlined),
+    AppNavItem(icon: Icons.bar_chart_outlined),
+    AppNavItem(icon: Icons.settings_outlined),
   ];
 
   static const double _fabGap = 60;
@@ -111,30 +110,28 @@ class _NavItem extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(AppRadius.md),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
+      borderRadius: BorderRadius.circular(AppRadius.lg),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 320),
+        curve: Curves.easeOutCubic,
+        margin: const EdgeInsets.symmetric(
           horizontal: AppSpacing.xs,
           vertical: AppSpacing.sm,
         ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              item.icon,
-              color: isActive ? activeColor : inactiveColor,
-              size: 24,
-            ),
-            const SizedBox(height: AppSpacing.xs),
-            Text(
-              item.label,
-              style: AppTextStyles.labelMedium.copyWith(
-                color: isActive ? activeColor : inactiveColor,
-                fontWeight: isActive ? FontWeight.w600 : FontWeight.normal,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ],
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.md,
+          vertical: AppSpacing.sm,
+        ),
+        decoration: BoxDecoration(
+          color: isActive
+              ? AppColors.primary.withOpacity(0.12)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+        ),
+        child: Icon(
+          item.icon,
+          color: isActive ? activeColor : inactiveColor,
+          size: 24,
         ),
       ),
     );

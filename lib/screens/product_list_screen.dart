@@ -10,6 +10,7 @@ import '../widgets/page_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/search_field.dart';
 import '../widgets/sort_indicator.dart';
+import '../utils/haptics.dart';
 import '../main.dart';
 import 'add_product_screen.dart';
 
@@ -42,6 +43,7 @@ class ProductListScreenState extends State<ProductListScreen> {
   bool _isStatsExpanded = false;
 
   void _toggleStats() {
+    Haptics.medium();
     final nextValue = !_isStatsExpanded;
     setState(() {
       _isStatsExpanded = nextValue;
@@ -125,6 +127,7 @@ class ProductListScreenState extends State<ProductListScreen> {
   }
 
   void _deleteProduct(Product product) {
+    Haptics.medium();
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -137,6 +140,7 @@ class ProductListScreenState extends State<ProductListScreen> {
           ),
           TextButton(
             onPressed: () async {
+              Haptics.heavy();
               Navigator.pop(ctx);
               await _db.deleteProduct(product.id!);
               if (mounted) {
@@ -555,6 +559,7 @@ class ProductListScreenState extends State<ProductListScreen> {
   }
 
   void _resetSort() {
+    Haptics.selection();
     setState(() => _sortOption = SortOption.nameAsc);
     _applyFilters();
   }
@@ -563,6 +568,7 @@ class ProductListScreenState extends State<ProductListScreen> {
     final isSelected = _sortOption == option;
     return InkWell(
       onTap: () {
+        Haptics.selection();
         setState(() => _sortOption = option);
         _applyFilters();
         Navigator.pop(context);

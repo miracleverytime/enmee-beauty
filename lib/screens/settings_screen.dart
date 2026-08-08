@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/page_header.dart';
 import '../widgets/skeleton_loader.dart';
+import '../utils/haptics.dart';
 import '../main.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -122,10 +123,15 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
   Widget _buildThemeSwitch() {
     final isDark = context.isDark;
+    void onToggle() {
+      Haptics.light();
+      SkincareApp.of(context)?.toggleTheme();
+    }
+
     return Material(
       color: Colors.transparent,
       child: InkWell(
-        onTap: () => SkincareApp.of(context)?.toggleTheme(),
+        onTap: onToggle,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
           padding: const EdgeInsets.all(16),
@@ -170,7 +176,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               ),
               Switch(
                 value: isDark,
-                onChanged: (_) => SkincareApp.of(context)?.toggleTheme(),
+                onChanged: (_) => onToggle(),
                 activeColor: AppColors.primary,
               ),
             ],

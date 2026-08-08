@@ -6,6 +6,7 @@ import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/search_field.dart';
+import '../utils/haptics.dart';
 import '../main.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -51,6 +52,7 @@ class _ReportScreenState extends State<ReportScreen> {
   List<Map<String, dynamic>> _filteredByProduct = [];
 
   void _toggleStats() {
+    Haptics.medium();
     final nextValue = !_isStatsExpanded;
     setState(() {
       _isStatsExpanded = nextValue;
@@ -385,6 +387,7 @@ class _ReportScreenState extends State<ReportScreen> {
             child: InkWell(
               onTap: () {
                 if (isSelected) return;
+                Haptics.selection();
                 setState(() => _selectedPeriod = period);
                 _loadData();
               },
