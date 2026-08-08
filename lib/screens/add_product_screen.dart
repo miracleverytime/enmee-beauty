@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../database/database_helper.dart';
 import '../models/product.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_toast.dart';
 
 class AddProductScreen extends StatefulWidget {
   final Product? product;
@@ -177,18 +178,19 @@ class _AddProductScreenState extends State<AddProductScreen> {
       }
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(widget.product == null ? 'Produk berhasil ditambahkan' : 'Produk berhasil diperbarui'),
-            backgroundColor: Colors.green,
-          ),
+        AppToast.success(
+          context,
+          title: widget.product == null ? 'Produk Berhasil Ditambahkan' : 'Produk Berhasil Diperbarui',
+          description: _nameController.text.trim(),
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan: $e'), backgroundColor: Colors.red),
+        AppToast.error(
+          context,
+          title: 'Gagal Menyimpan Produk',
+          description: '$e',
         );
       }
     }

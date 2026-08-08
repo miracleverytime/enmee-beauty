@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:toastification/toastification.dart';
 import 'screens/main_shell.dart';
 import 'screens/add_product_screen.dart';
 import 'screens/add_transaction_screen.dart';
@@ -96,33 +97,35 @@ class _SkincareAppState extends State<SkincareApp> {
     return ValueListenableBuilder<ThemeMode>(
       valueListenable: _themeMode,
       builder: (context, mode, _) {
-        return MaterialApp(
-          title: 'Skincare Stock',
-          debugShowCheckedModeBanner: false,
-          theme: lightTheme(),
-          darkTheme: darkTheme(),
-          themeMode: mode,
-          initialRoute: '/',
-          routes: {
-            '/': (context) => MainShell(
-                  initialIndex: 0,
-                  statsInitiallyExpanded: _isStatsExpanded,
-                ),
-            '/transactions': (context) => MainShell(
-                  initialIndex: 1,
-                  statsInitiallyExpanded: _isStatsExpanded,
-                ),
-            '/report': (context) => MainShell(
-                  initialIndex: 2,
-                  statsInitiallyExpanded: _isStatsExpanded,
-                ),
-            '/settings': (context) => MainShell(
-                  initialIndex: 3,
-                  statsInitiallyExpanded: _isStatsExpanded,
-                ),
-            '/add-product': (context) => const AddProductScreen(),
-            '/add-transaction': (context) => const AddTransactionScreen(),
-          },
+        return ToastificationWrapper(
+          child: MaterialApp(
+            title: 'Skincare Stock',
+            debugShowCheckedModeBanner: false,
+            theme: lightTheme(),
+            darkTheme: darkTheme(),
+            themeMode: mode,
+            initialRoute: '/',
+            routes: {
+              '/': (context) => MainShell(
+                    initialIndex: 0,
+                    statsInitiallyExpanded: _isStatsExpanded,
+                  ),
+              '/transactions': (context) => MainShell(
+                    initialIndex: 1,
+                    statsInitiallyExpanded: _isStatsExpanded,
+                  ),
+              '/report': (context) => MainShell(
+                    initialIndex: 2,
+                    statsInitiallyExpanded: _isStatsExpanded,
+                  ),
+              '/settings': (context) => MainShell(
+                    initialIndex: 3,
+                    statsInitiallyExpanded: _isStatsExpanded,
+                  ),
+              '/add-product': (context) => const AddProductScreen(),
+              '/add-transaction': (context) => const AddTransactionScreen(),
+            },
+          ),
         );
       },
     );

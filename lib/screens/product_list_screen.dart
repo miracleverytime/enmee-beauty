@@ -13,6 +13,7 @@ import '../widgets/sort_indicator.dart';
 import '../widgets/staggered_item.dart';
 import '../utils/haptics.dart';
 import '../utils/formatters.dart';
+import '../utils/app_toast.dart';
 import '../main.dart';
 import 'add_product_screen.dart';
 
@@ -73,11 +74,10 @@ class ProductListScreenState extends State<ProductListScreen> {
       _applyFilters();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal memuat data: $e'),
-            backgroundColor: context.destructiveColor,
-          ),
+        AppToast.error(
+          context,
+          title: 'Gagal Memuat Data',
+          description: '$e',
         );
       }
     }
@@ -146,11 +146,10 @@ class ProductListScreenState extends State<ProductListScreen> {
               Navigator.pop(ctx);
               await _db.deleteProduct(product.id!);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Produk berhasil dihapus'),
-                    backgroundColor: context.successColor,
-                  ),
+                AppToast.success(
+                  context,
+                  title: 'Produk Dihapus',
+                  description: '"${product.name}" berhasil dihapus',
                 );
               }
               loadData();

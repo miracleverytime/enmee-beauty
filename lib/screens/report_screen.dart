@@ -9,6 +9,7 @@ import '../widgets/search_field.dart';
 import '../widgets/staggered_item.dart';
 import '../utils/haptics.dart';
 import '../utils/formatters.dart';
+import '../utils/app_toast.dart';
 import '../main.dart';
 
 class ReportScreen extends StatefulWidget {
@@ -90,11 +91,10 @@ class _ReportScreenState extends State<ReportScreen> {
       _applyFilters();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal memuat data: $e'),
-            backgroundColor: context.destructiveColor,
-          ),
+        AppToast.error(
+          context,
+          title: 'Gagal Memuat Laporan',
+          description: '$e',
         );
       }
     }

@@ -11,6 +11,7 @@ import '../widgets/search_field.dart';
 import '../widgets/staggered_item.dart';
 import '../utils/haptics.dart';
 import '../utils/formatters.dart';
+import '../utils/app_toast.dart';
 import '../main.dart';
 import 'add_transaction_screen.dart';
 
@@ -63,11 +64,10 @@ class TransactionListScreenState extends State<TransactionListScreen> {
       _applyFilters();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Gagal memuat data: $e'),
-            backgroundColor: context.destructiveColor,
-          ),
+        AppToast.error(
+          context,
+          title: 'Gagal Memuat Data',
+          description: '$e',
         );
       }
     }
@@ -144,11 +144,10 @@ class TransactionListScreenState extends State<TransactionListScreen> {
                     product.id!, product.stock + transaction.quantity);
               }
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: const Text('Transaksi berhasil dihapus'),
-                    backgroundColor: context.successColor,
-                  ),
+                AppToast.success(
+                  context,
+                  title: 'Transaksi Dihapus',
+                  description: '${transaction.productName} (x${transaction.quantity})',
                 );
               }
               loadData();
@@ -576,11 +575,10 @@ class TransactionListScreenState extends State<TransactionListScreen> {
                 children: [
                   InkWell(
                     onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Tahan lama untuk menghapus'),
-                          duration: Duration(seconds: 2),
-                        ),
+                      AppToast.info(
+                        context,
+                        title: 'Petunjuk Hapus',
+                        description: 'Tahan lama item transaksi untuk menghapus',
                       );
                     },
                     borderRadius: BorderRadius.circular(8),

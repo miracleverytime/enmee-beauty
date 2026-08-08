@@ -4,6 +4,7 @@ import '../models/product.dart';
 import '../models/transaction.dart' as model;
 import '../theme/app_theme.dart';
 import '../utils/formatters.dart';
+import '../utils/app_toast.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   const AddTransactionScreen({super.key});
@@ -41,8 +42,10 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       setState(() => _products = products);
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal memuat produk: $e'), backgroundColor: Colors.red),
+        AppToast.error(
+          context,
+          title: 'Gagal Memuat Produk',
+          description: '$e',
         );
       }
     }
@@ -52,16 +55,20 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
   Future<void> _saveTransaction() async {
     if (!_formKey.currentState!.validate()) return;
     if (_selectedProduct == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Pilih produk terlebih dahulu'), backgroundColor: Colors.orange),
+      AppToast.warning(
+        context,
+        title: 'Pilih Produk',
+        description: 'Silakan pilih produk terlebih dahulu',
       );
       return;
     }
 
     final quantity = int.parse(_quantityController.text);
     if (quantity > _selectedProduct!.stock) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Stok tidak cukup! Stok tersedia: ${_selectedProduct!.stock}'), backgroundColor: Colors.red),
+      AppToast.error(
+        context,
+        title: 'Stok Tidak Cukup',
+        description: 'Stok tersedia saat ini: ${_selectedProduct!.stock} pcs',
       );
       return;
     }
@@ -79,15 +86,19 @@ class _AddTransactionScreenState extends State<AddTransactionScreen> {
       await _db.updateProductStock(_selectedProduct!.id!, _selectedProduct!.stock - quantity);
 
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Transaksi berhasil disimpan'), backgroundColor: Colors.green),
+        AppToast.success(
+          context,
+          title: 'Transaksi Berhasil Disimpan',
+          description: '${_selectedProduct!.name} ($quantity pcs)',
         );
         Navigator.pop(context);
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan transaksi: $e'), backgroundColor: Colors.red),
+        AppToast.error(
+          context,
+          title: 'Gagal Menyimpan Transaksi',
+          description: '$e',
         );
       }
     }
