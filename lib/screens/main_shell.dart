@@ -77,8 +77,13 @@ class _MainShellState extends State<MainShell> {
               key: _productsKey,
               initialStatsExpanded: widget.statsInitiallyExpanded,
             ),
-            TransactionListScreen(key: _transactionsKey),
-            const ReportScreen(),
+            TransactionListScreen(
+              key: _transactionsKey,
+              initialStatsExpanded: widget.statsInitiallyExpanded,
+            ),
+            ReportScreen(
+              initialStatsExpanded: widget.statsInitiallyExpanded,
+            ),
             const SettingsScreen(),
           ],
         ),

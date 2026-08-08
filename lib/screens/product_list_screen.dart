@@ -6,6 +6,7 @@ import '../utils/page_transitions.dart';
 import '../widgets/product_card.dart';
 import '../widgets/skeleton_loader.dart';
 import '../widgets/collapsible_stats.dart';
+import '../widgets/page_header.dart';
 import '../main.dart';
 import 'add_product_screen.dart';
 
@@ -33,7 +34,6 @@ class ProductListScreenState extends State<ProductListScreen> {
   List<String> _categories = ['Semua'];
   bool _showLowStockOnly = false;
   SortOption _sortOption = SortOption.nameAsc;
-  int _notificationCount = 3; // Placeholder untuk notifikasi
   final GlobalKey<CollapsibleStatsState> _statsKey = GlobalKey<CollapsibleStatsState>();
   bool _isStatsExpanded = false;
 
@@ -160,7 +160,11 @@ class ProductListScreenState extends State<ProductListScreen> {
           ? _buildLoadingState()
           : Column(
               children: [
-                _buildAppBar(),
+                PageHeader(
+                  title: 'Daftar Produk',
+                  showStatsToggle: true,
+                  onStatsToggle: _toggleStats,
+                ),
                 CollapsibleStats(
                   key: _statsKey,
                   initialExpanded: _isStatsExpanded,
@@ -179,7 +183,11 @@ class ProductListScreenState extends State<ProductListScreen> {
     return SingleChildScrollView(
       child: Column(
         children: [
-          _buildAppBar(),
+          PageHeader(
+            title: 'Daftar Produk',
+            showStatsToggle: true,
+            onStatsToggle: _toggleStats,
+          ),
           const SizedBox(height: AppSpacing.lg),
           // Summary stats skeleton - 2 cards per row
           Padding(
@@ -215,202 +223,6 @@ class ProductListScreenState extends State<ProductListScreen> {
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildAppBar() {
-    return Stack(
-      clipBehavior: Clip.none,
-      children: [
-        Container(
-          margin: const EdgeInsets.all(20),
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          decoration: BoxDecoration(
-            color: context.surfaceColor,
-            borderRadius: BorderRadius.circular(12),
-            border: Border.all(
-              color: context.borderColor.withOpacity(0.5),
-              width: 1,
-            ),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.03),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Text(
-                'Daftar Produk',
-                style: TextStyle(
-                  color: context.textPrimary,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // Dark mode toggle
-                  Container(
-                    width: 36,
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: context.backgroundColor,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: context.borderColor.withOpacity(0.3),
-                        width: 1,
-                      ),
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () {
-                        SkincareApp.of(context)?.toggleTheme();
-                      },
-                      icon: AnimatedSwitcher(
-                        duration: const Duration(milliseconds: 350),
-                        transitionBuilder: (child, animation) {
-                          return RotationTransition(
-                            turns: Tween<double>(begin: 0.85, end: 1.0)
-                                .animate(animation),
-                            child: FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: Icon(
-                          context.isDark
-                              ? Icons.wb_sunny_outlined
-                              : Icons.nights_stay_outlined,
-                          key: ValueKey<bool>(context.isDark),
-                          color: context.textSecondary,
-                          size: 18,
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  // Notification icon with badge
-                  Stack(
-                    clipBehavior: Clip.none,
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: context.backgroundColor,
-                          borderRadius: BorderRadius.circular(10),
-                          border: Border.all(
-                            color: context.borderColor.withOpacity(0.3),
-                            width: 1,
-                          ),
-                        ),
-                        child: IconButton(
-                          padding: EdgeInsets.zero,
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Fitur notifikasi akan segera hadir'),
-                                duration: Duration(seconds: 2),
-                              ),
-                            );
-                          },
-                          icon: Icon(
-                            Icons.notifications_outlined,
-                            color: context.textSecondary,
-                            size: 18,
-                          ),
-                        ),
-                      ),
-                      if (_notificationCount > 0)
-                        Positioned(
-                          right: 4,
-                          top: 4,
-                          child: Container(
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFEF4444),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color(0xFFEF4444).withOpacity(0.3),
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 1),
-                                ),
-                              ],
-                            ),
-                            constraints: const BoxConstraints(
-                              minWidth: 14,
-                              minHeight: 14,
-                            ),
-                            child: Text(
-                              _notificationCount > 9 ? '9+' : '$_notificationCount',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 7,
-                                fontWeight: FontWeight.bold,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-        // Toggle chevron bar overlapping header
-        Positioned(
-          bottom: 0,
-          left: 0,
-          right: 0,
-          child: Center(
-            child: GestureDetector(
-              onTap: _toggleStats,
-              child: Container(
-                width: 60,
-                height: 20,
-                decoration: BoxDecoration(
-                  color: context.surfaceColor,
-                  borderRadius: const BorderRadius.only(
-                    bottomLeft: Radius.circular(10),
-                    bottomRight: Radius.circular(10),
-                  ),
-                  border: Border(
-                    left: BorderSide(
-                      color: context.borderColor.withOpacity(0.5),
-                      width: 1,
-                    ),
-                    right: BorderSide(
-                      color: context.borderColor.withOpacity(0.5),
-                      width: 1,
-                    ),
-                    bottom: BorderSide(
-                      color: context.borderColor.withOpacity(0.5),
-                      width: 1,
-                    ),
-                  ),
-                ),
-                child: Center(
-                  child: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.textMuted.withOpacity(0.5),
-                    size: 14,
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ),
-      ],
     );
   }
 
