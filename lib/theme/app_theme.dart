@@ -39,8 +39,8 @@ class AppColors {
   static const Color lightSurface = Color(0xFFFFFFFF); // #FFFFFF - kartu / surface
   static const Color lightBorder = Color(0xFFE5E7EB); // #E5E7EB - garis tepi
   static const Color lightTextPrimary = Color(0xFF1A2233); // #1A2233 - teks utama
-  static const Color lightTextSecondary = Color(0xFF6B7280); // #6B7280 - teks sekunder
-  static const Color lightTextMuted = Color(0xFF9CA3AF); // #9CA3AF - teks muted
+  static const Color lightTextSecondary = Color(0xFF4B5563); // #4B5563 - teks sekunder (WCAG AA ~ 7:1)
+  static const Color lightTextMuted = Color(0xFF6B7280); // #6B7280 - teks muted (WCAG AA 4.6:1)
 }
 
 /// Design Tokens - Spacing & Sizing

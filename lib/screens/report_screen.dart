@@ -155,6 +155,7 @@ class _ReportScreenState extends State<ReportScreen> {
                   title: 'Laporan Pendapatan',
                   showStatsToggle: true,
                   onStatsToggle: _toggleStats,
+                  isStatsExpanded: _isStatsExpanded,
                 ),
                 CollapsibleStats(
                   key: _statsKey,
@@ -178,6 +179,7 @@ class _ReportScreenState extends State<ReportScreen> {
             title: 'Laporan Pendapatan',
             showStatsToggle: true,
             onStatsToggle: _toggleStats,
+            isStatsExpanded: _isStatsExpanded,
           ),
           const SizedBox(height: AppSpacing.lg),
           Padding(

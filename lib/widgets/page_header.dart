@@ -10,12 +10,14 @@ class PageHeader extends StatelessWidget {
   final String title;
   final bool showStatsToggle;
   final VoidCallback? onStatsToggle;
+  final bool isStatsExpanded;
 
   const PageHeader({
     super.key,
     required this.title,
     this.showStatsToggle = false,
     this.onStatsToggle,
+    this.isStatsExpanded = false,
   });
 
   @override
@@ -92,10 +94,14 @@ class PageHeader extends StatelessWidget {
                   ),
                 ),
                 child: Center(
-                  child: Icon(
-                    Icons.keyboard_arrow_down,
-                    color: context.textMuted.withOpacity(0.5),
-                    size: 14,
+                  child: AnimatedRotation(
+                    turns: isStatsExpanded ? 0.5 : 0,
+                    duration: const Duration(milliseconds: 200),
+                    child: Icon(
+                      Icons.keyboard_arrow_down,
+                      color: context.textMuted.withOpacity(0.5),
+                      size: 14,
+                    ),
                   ),
                 ),
               ),

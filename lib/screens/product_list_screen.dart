@@ -180,6 +180,7 @@ class ProductListScreenState extends State<ProductListScreen> {
                   title: 'Daftar Produk',
                   showStatsToggle: true,
                   onStatsToggle: _toggleStats,
+                  isStatsExpanded: _isStatsExpanded,
                 ),
                 CollapsibleStats(
                   key: _statsKey,
@@ -203,6 +204,7 @@ class ProductListScreenState extends State<ProductListScreen> {
             title: 'Daftar Produk',
             showStatsToggle: true,
             onStatsToggle: _toggleStats,
+            isStatsExpanded: _isStatsExpanded,
           ),
           const SizedBox(height: AppSpacing.lg),
           // Summary stats skeleton - 2 cards per row
@@ -434,43 +436,98 @@ class ProductListScreenState extends State<ProductListScreen> {
     );
   }
 
+  bool _isCategoryDropdownOpen = false;
+
   Widget _buildCategoryDropdown() {
-    return Container(
-      height: 44,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: context.surfaceColor,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(
-          color: context.borderColor.withOpacity(0.5),
-          width: 1,
+    return MenuAnchor(
+      style: MenuStyle(
+        backgroundColor: WidgetStatePropertyAll(context.surfaceColor),
+        shape: WidgetStatePropertyAll(
+          RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: _selectedCategory,
-          isExpanded: true,
-          icon: Icon(Icons.keyboard_arrow_down, color: context.textMuted, size: 20),
-          style: TextStyle(
-            color: context.textPrimary,
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-          ),
-          dropdownColor: context.surfaceColor,
-          items: _categories.map((cat) {
-            return DropdownMenuItem<String>(
-              value: cat,
-              child: Text(cat == 'Semua' ? 'Semua Kategori' : cat),
-            );
-          }).toList(),
-          onChanged: (value) {
-            if (value != null) {
-              setState(() => _selectedCategory = value);
-              _applyFilters();
+      onOpen: () => setState(() => _isCategoryDropdownOpen = true),
+      onClose: () => setState(() => _isCategoryDropdownOpen = false),
+      builder: (context, controller, child) {
+        return InkWell(
+          onTap: () {
+            if (controller.isOpen) {
+              controller.close();
+            } else {
+              controller.open();
             }
           },
-        ),
-      ),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            height: 44,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: BoxDecoration(
+              color: context.surfaceColor,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: context.borderColor.withOpacity(0.5),
+                width: 1,
+              ),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Text(
+                    _selectedCategory == 'Semua'
+                        ? 'Semua Kategori'
+                        : _selectedCategory,
+                    style: TextStyle(
+                      color: context.textPrimary,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400,
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                AnimatedRotation(
+                  turns: _isCategoryDropdownOpen ? 0.5 : 0,
+                  duration: const Duration(milliseconds: 200),
+                  child: Icon(
+                    Icons.keyboard_arrow_down,
+                    color: context.textMuted,
+                    size: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+      menuChildren: _categories.map((cat) {
+        final isSelected = _selectedCategory == cat;
+        return MenuItemButton(
+          onPressed: () {
+            Haptics.selection();
+            setState(() => _selectedCategory = cat);
+            _applyFilters();
+          },
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                if (isSelected) ...[
+                  Icon(Icons.check, color: AppColors.primary, size: 18),
+                  const SizedBox(width: 8),
+                ],
+                Text(
+                  cat == 'Semua' ? 'Semua Kategori' : cat,
+                  style: TextStyle(
+                    color: isSelected ? AppColors.primary : context.textPrimary,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w400,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      }).toList(),
     );
   }
 

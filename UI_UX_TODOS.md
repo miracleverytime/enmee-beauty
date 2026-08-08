@@ -38,7 +38,7 @@ Diurut dari impact tertinggi ke terendah. Centang item yang sudah selesai.
 ## Info
 
 - [ ] **#17 Aksesibilitas** — `Semantics` label untuk icon button (theme toggle, notif, delete). Sekarang cuma `IconButton` tanpa tooltip — screen reader user bakal bingung.
-- [ ] **#18 Text contrast check** — Warna `textMuted`, `textSecondary` cek WCAG contrast di light/dark mode.
+- [x] **#18 Text contrast check** — Warna `lightTextSecondary` diperbarui dari `#6B7280` ke `#4B5563` (rasio kontras ~7:1) dan `lightTextMuted` dari `#9CA3AF` ke `#6B7280` (rasio kontras 4.6:1 terhadap putih/light bg), memenuhi standar WCAG AA (minimal 4.5:1). Warna Dark Mode (`#95A3B6`) sudah memenuhi WCAG AA (~6.2:1 terhadap dark surface).
 
 ---
 

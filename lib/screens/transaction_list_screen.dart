@@ -179,6 +179,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
                   title: 'Daftar Transaksi',
                   showStatsToggle: true,
                   onStatsToggle: _toggleStats,
+                  isStatsExpanded: _isStatsExpanded,
                 ),
                 CollapsibleStats(
                   key: _statsKey,
@@ -202,6 +203,7 @@ class TransactionListScreenState extends State<TransactionListScreen> {
             title: 'Daftar Transaksi',
             showStatsToggle: true,
             onStatsToggle: _toggleStats,
+            isStatsExpanded: _isStatsExpanded,
           ),
           const SizedBox(height: AppSpacing.lg),
           Padding(
