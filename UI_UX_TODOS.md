@@ -16,8 +16,8 @@ Diurut dari impact tertinggi ke terendah. Centang item yang sudah selesai.
 
 ## Medium Impact
 
-- [ ] **#5 Skeleton loader di settings** — `settings_screen.dart` render instan. Tambahin skeleton atau fade-in biar lebih polished.
-- [ ] **#6 Indikator sort/filter aktif** — Sort bottom sheet di `product_list_screen.dart` gak ada indikator "sedang di-sort by X". Tambahin chip kecil: "Diurutkan: Harga ↓" di bawah search bar.
+- [x] **#5 Skeleton loader di settings** — `SettingItemSkeleton` & `SectionHeaderSkeleton` ditambahin di `skeleton_loader.dart`. Settings screen punya 220ms loading state + `AnimatedSwitcher` fade ke konten (konsisten dengan loading state di tab lain).
+- [x] **#6 Indikator sort/filter aktif** — Widget `SortIndicator` di `lib/widgets/sort_indicator.dart` (chip pill dengan icon swap_vert + label + tombol X). Tampil di product toolbar via `AnimatedSize` cuma saat sort bukan default (Nama A-Z). Tap body buka sort sheet, tap X reset ke default.
 - [ ] **#7 Haptic feedback** di:
   - Toggle theme (settings)
   - Toggle stats collapse

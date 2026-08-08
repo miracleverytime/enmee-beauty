@@ -9,6 +9,7 @@ import '../widgets/collapsible_stats.dart';
 import '../widgets/page_header.dart';
 import '../widgets/empty_state.dart';
 import '../widgets/search_field.dart';
+import '../widgets/sort_indicator.dart';
 import '../main.dart';
 import 'add_product_screen.dart';
 
@@ -407,6 +408,21 @@ class ProductListScreenState extends State<ProductListScreen> {
               _buildSortButton(),
             ],
           ),
+          // Sort indicator: hanya tampil saat sort bukan default.
+          AnimatedSize(
+            duration: const Duration(milliseconds: 220),
+            curve: Curves.easeOutCubic,
+            child: _sortOption == SortOption.nameAsc
+                ? const SizedBox.shrink()
+                : Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: SortIndicator(
+                      label: 'Diurutkan: $_currentSortLabel',
+                      onTap: _showSortBottomSheet,
+                      onClear: _resetSort,
+                    ),
+                  ),
+          ),
         ],
       ),
     );
@@ -523,6 +539,24 @@ class ProductListScreenState extends State<ProductListScreen> {
         );
       },
     );
+  }
+
+  String get _currentSortLabel {
+    switch (_sortOption) {
+      case SortOption.nameAsc:
+        return 'Nama (A-Z)';
+      case SortOption.price:
+        return 'Harga';
+      case SortOption.stock:
+        return 'Stok';
+      case SortOption.margin:
+        return 'Margin';
+    }
+  }
+
+  void _resetSort() {
+    setState(() => _sortOption = SortOption.nameAsc);
+    _applyFilters();
   }
 
   Widget _buildSortOption(String label, SortOption option) {

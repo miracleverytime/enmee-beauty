@@ -173,3 +173,52 @@ class SummaryCardSkeleton extends StatelessWidget {
     );
   }
 }
+
+/// Skeleton untuk section header di settings
+class SectionHeaderSkeleton extends StatelessWidget {
+  const SectionHeaderSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(left: 4, bottom: 12),
+      child: SkeletonLoader(width: 60, height: 10, borderRadius: AppRadius.sm),
+    );
+  }
+}
+
+/// Skeleton untuk satu item setting (icon + 2 baris teks)
+class SettingItemSkeleton extends StatelessWidget {
+  const SettingItemSkeleton({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpacing.lg),
+      decoration: BoxDecoration(
+        color: context.surfaceColor,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: context.borderColor.withOpacity(0.5),
+          width: 1,
+        ),
+      ),
+      child: const Row(
+        children: [
+          SkeletonLoader(width: 40, height: 40, borderRadius: AppRadius.sm),
+          SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SkeletonLoader(width: 120, height: 14),
+                SizedBox(height: AppSpacing.xs),
+                SkeletonLoader(width: 180, height: 11),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../widgets/page_header.dart';
+import '../widgets/skeleton_loader.dart';
 import '../main.dart';
 
 class SettingsScreen extends StatefulWidget {
@@ -11,6 +12,18 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    // Brief loading state agar transisi dari tab terasa halus
+    // dan shimmer terlihat sebelum konten dirender.
+    Future.delayed(const Duration(milliseconds: 220), () {
+      if (mounted) setState(() => _isLoading = false);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -18,80 +31,88 @@ class _SettingsScreenState extends State<SettingsScreen> {
         children: [
           const PageHeader(title: 'Pengaturan'),
           Expanded(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSettingSection(
-                    'Tampilan',
-                    [
-                      _buildThemeSwitch(),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSettingSection(
-                    'Umum',
-                    [
-                      _buildSettingItem(
-                        Icons.store_outlined,
-                        'Informasi Toko',
-                        'Nama toko, alamat, kontak',
-                        () {},
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 280),
+              switchInCurve: Curves.easeOutCubic,
+              switchOutCurve: Curves.easeInCubic,
+              child: _isLoading
+                  ? const _SettingsSkeleton()
+                  : SingleChildScrollView(
+                      key: const ValueKey('settings-content'),
+                      padding: const EdgeInsets.all(20),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildSettingSection(
+                            'Tampilan',
+                            [
+                              _buildThemeSwitch(),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          _buildSettingSection(
+                            'Umum',
+                            [
+                              _buildSettingItem(
+                                Icons.store_outlined,
+                                'Informasi Toko',
+                                'Nama toko, alamat, kontak',
+                                () {},
+                              ),
+                              _buildSettingItem(
+                                Icons.receipt_long_outlined,
+                                'Format Nota',
+                                'Atur format cetak nota',
+                                () {},
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          _buildSettingSection(
+                            'Data',
+                            [
+                              _buildSettingItem(
+                                Icons.backup_outlined,
+                                'Backup Data',
+                                'Cadangkan database',
+                                () {},
+                              ),
+                              _buildSettingItem(
+                                Icons.restore_outlined,
+                                'Restore Data',
+                                'Pulihkan dari backup',
+                                () {},
+                              ),
+                              _buildSettingItem(
+                                Icons.delete_outline,
+                                'Hapus Semua Data',
+                                'Reset database',
+                                () {},
+                                isDestructive: true,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 24),
+                          _buildSettingSection(
+                            'Tentang',
+                            [
+                              _buildSettingItem(
+                                Icons.info_outline,
+                                'Versi Aplikasi',
+                                'v1.0.0',
+                                null,
+                              ),
+                              _buildSettingItem(
+                                Icons.help_outline,
+                                'Bantuan',
+                                'Panduan penggunaan',
+                                () {},
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
-                      _buildSettingItem(
-                        Icons.receipt_long_outlined,
-                        'Format Nota',
-                        'Atur format cetak nota',
-                        () {},
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSettingSection(
-                    'Data',
-                    [
-                      _buildSettingItem(
-                        Icons.backup_outlined,
-                        'Backup Data',
-                        'Cadangkan database',
-                        () {},
-                      ),
-                      _buildSettingItem(
-                        Icons.restore_outlined,
-                        'Restore Data',
-                        'Pulihkan dari backup',
-                        () {},
-                      ),
-                      _buildSettingItem(
-                        Icons.delete_outline,
-                        'Hapus Semua Data',
-                        'Reset database',
-                        () {},
-                        isDestructive: true,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  _buildSettingSection(
-                    'Tentang',
-                    [
-                      _buildSettingItem(
-                        Icons.info_outline,
-                        'Versi Aplikasi',
-                        'v1.0.0',
-                        null,
-                      ),
-                      _buildSettingItem(
-                        Icons.help_outline,
-                        'Bantuan',
-                        'Panduan penggunaan',
-                        () {},
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+                    ),
             ),
           ),
         ],
@@ -259,5 +280,40 @@ class _SettingsScreenState extends State<SettingsScreen> {
       ),
     );
   }
+}
 
+class _SettingsSkeleton extends StatelessWidget {
+  const _SettingsSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      key: const ValueKey('settings-skeleton'),
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SectionHeaderSkeleton(),
+          const SettingItemSkeleton(),
+          const SizedBox(height: 24),
+          const SectionHeaderSkeleton(),
+          const SettingItemSkeleton(),
+          const SizedBox(height: AppSpacing.sm),
+          const SettingItemSkeleton(),
+          const SizedBox(height: 24),
+          const SectionHeaderSkeleton(),
+          const SettingItemSkeleton(),
+          const SizedBox(height: AppSpacing.sm),
+          const SettingItemSkeleton(),
+          const SizedBox(height: AppSpacing.sm),
+          const SettingItemSkeleton(),
+          const SizedBox(height: 24),
+          const SectionHeaderSkeleton(),
+          const SettingItemSkeleton(),
+          const SizedBox(height: AppSpacing.sm),
+          const SettingItemSkeleton(),
+        ],
+      ),
+    );
+  }
 }
